@@ -103,6 +103,8 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .back{background:none;border:0;color:var(--acc);font:inherit;font-weight:600;padding:6px 0;text-align:left}.st{font-size:22px;margin:4px 0 12px}
 .cust{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;margin:6px 0}.cust input[type=color]{width:44px;height:32px;border:0;background:none;padding:0}
 .tg{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}.tg:first-child{border-top:0}.tg input{width:22px;height:22px;accent-color:var(--acc);flex:none}
+.isw{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0;font-size:20px;flex:none}.isw svg{width:22px;height:22px}
+.ig{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;max-height:60vh;overflow-y:auto}.ig button{aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:7px}.ig button.on{outline:2px solid var(--acc);outline-offset:1px}.ig svg{width:100%;height:100%}.mk svg{width:20px;height:20px}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
@@ -115,6 +117,7 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 </header>
 <main id="app"></main>
 <div id="pal" class="pal" hidden><div class="sheet"><div class="sh">Выберите цвет</div><div class="pg" id="pg"></div></div></div>
+<div id="ipk" class="pal" hidden><div class="sheet"><div class="sh" id="ish"></div><div class="ig" id="ig"></div></div></div>
 <nav class="dock" id="dock" aria-label="Разделы"><i class="pill"></i><button data-pg="habits" class="on" aria-label="Привычки"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg></button><button data-pg="cal" aria-label="Календарь"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button data-pg="food" aria-label="Питание"><svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 002 2v8M11 3v8a2 2 0 01-2 2M17 21V3c-2.5 1.5-3 5-3 8h3"/></svg></button><button data-pg="ana" aria-label="Аналитика"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></button><button data-pg="set" aria-label="Личное пространство"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.6-4 3.6-6.5 7.5-6.5s6.9 2.5 7.5 6.5"/></svg></button></nav>
 <canvas id="fx"></canvas><div class="toast" id="toast" hidden></div>
 <div class="wrap" style="padding:0" id="addbox">
@@ -244,14 +247,14 @@ function demo(){
 }
 function addHabit(){
   const v=$('nm').value.trim();if(!v)return;
-  const kind=$('kind').value,sch=kind==='quit'?'daily':$('sch').value,h={id:uid(),name:v,color:pc,days:{},kind,sch,created:kd(today)};
+  const kind=$('kind').value,sch=kind==='quit'?'daily':$('sch').value,h={id:uid(),name:v,color:pc,days:{},kind,sch,created:kd(today),icon:pi};
   if(kind==='count'||kind==='timer'){h.goal=Math.max(1,+$('goal').value||1);h.step=Math.max(1,+$('step').value||1);h.unit=$('unit').value.trim()}
   if(kind==='timer')h.unit='мин';
   if(kind==='quit')h.start=kd(today);
   if(sch==='days')h.wd=form.d.length?form.d.slice():[0,1,2,3,4,5,6];
   if(sch==='week')h.n=form.n;
   S.habits.push(h);
-  $('nm').value='';pc=COLORS.find(c=>!S.habits.some(h=>h.color===c))||COLORS[0];drawDots();save();render();
+  $('nm').value='';pi=null;pc=COLORS.find(c=>!S.habits.some(h=>h.color===c))||COLORS[0];drawDots();save();render();
 }
 function drawDots(){
   $('cl').innerHTML=`<button class="sw" id="sw" style="--c:${pc}" aria-label="Выбрать цвет"><i></i>Цвет</button><button class="go" id="go">Добавить</button>`;
@@ -572,6 +575,142 @@ function setView(){
 }
 $('app').addEventListener('change',e=>{const d=e.target.dataset;if(d.hap){S.haptic=S.haptic||{};S.haptic[d.hap]=e.target.checked;save()}});
 document.addEventListener('click',e=>{if(e.target.closest('#dock button,#tt,#tm,#ty,.mi,.back'))buzz('nav')});
+let pi=null;
+const TI={ru:{icon:'Иконка',iconTitle:'Выберите иконку'},en:{icon:'Icon',iconTitle:'Choose an icon'}};
+const IC=[
+['glass','drink','<path d="M7 4h10l-1.3 15.2a1.5 1.5 0 0 1-1.5 1.3h-4.4a1.5 1.5 0 0 1-1.5-1.3z"/><path d="M7.6 10h8.8"/>'],
+['drop','drink','<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>'],
+['bottle','drink','<path d="M10 3h4v3l2 3v10a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9l2-3z"/>'],
+['tea','drink','<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/>'],
+['coffee','drink','<path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/><path d="M9 2v3M12 2v3"/>'],
+['juice','drink','<path d="M7 7h10l-1 13H8z"/><path d="M12 7l2-4h3"/>'],
+['wine','drink','<path d="M7 3h10c0 5-2 8-5 8S7 8 7 3z"/><path d="M12 11v9M8 21h8"/>'],
+['apple','food','<path d="M12 7c-3 0-6 2-6 6.5S8 21 10 21c1 0 1.2-.6 2-.6s1 .6 2 .6c2 0 4-2 4-7.5S15 7 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/>'],
+['salad','food','<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 8c0-2 2-2 2-4M13 8c0-2 2-2 2-4"/>'],
+['bread','food','<path d="M5 11a7 7 0 0 1 14 0v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M9 11l2 3M13 11l2 3"/>'],
+['egg','food','<path d="M12 3c3 0 6 5 6 10a6 6 0 0 1-12 0c0-5 3-10 6-10z"/>'],
+['fish','food','<path d="M3 12c3-4 7-5 11-3l5-3v12l-5-3c-4 2-8 1-11-3z"/><circle cx="8" cy="11" r=".8"/>'],
+['pizza','food','<path d="M12 21L3 6a16 16 0 0 1 18 0z"/><path d="M8 10h.01M12 13h.01M11 8h.01"/>'],
+['pan','food','<circle cx="11" cy="13" r="6"/><path d="M17 11l4-2"/>'],
+['cake','food','<path d="M4 21V13h16v8"/><path d="M4 17c2 1.5 4-1.5 6 0s4-1.5 6 0 4-1.5 4 0"/><path d="M12 13V8M12 5v.01"/>'],
+['cutlery','food','<path d="M7 3v7a2 2 0 0 0 2 2v9M5 3v5M9 3v5M17 21V3c-2 1-3 4-3 8h3"/>'],
+['banana','food','<path d="M4 6c6 0 12 4 14 13-2-1-4-1-6-1C8 18 5 14 4 6z"/>'],
+['candy','food','<path d="M4 12l3-3v6zM20 12l-3-3v6z"/><rect x="7" y="8" width="10" height="8" rx="2"/>'],
+['run','sport','<circle cx="14" cy="5" r="2"/><path d="M11 22l2-6-3-3 2-4 4 2 3 2M8 9l-3 3M6 14l-3 1"/>'],
+['dumbbell','sport','<path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/>'],
+['bike','sport','<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h6l2 7M10 9l2 7h6"/>'],
+['yoga','sport','<circle cx="12" cy="5" r="2"/><path d="M12 8v7M8 4l4 4 4-4M9 22l3-7 3 7"/>'],
+['swim','sport','<path d="M2 17c2 0 2-1.5 4-1.5S8 17 10 17s2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M7 13l4-5 3 2 4-3"/>'],
+['ball','sport','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 4 3 14 0 18M12 3c-3 4-3 14 0 18"/>'],
+['football','sport','<circle cx="12" cy="12" r="9"/><path d="M12 8l3 2-1 4h-4l-1-4zM12 3v5M12 15v6"/>'],
+['basketball','sport','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M6 5c3 3 3 11 0 14M18 5c-3 3-3 11 0 14"/>'],
+['tennis','sport','<circle cx="12" cy="12" r="9"/><path d="M5 5c4 4 4 10 0 14M19 5c-4 4-4 10 0 14"/>'],
+['walk','sport','<path d="M8 4c0 2-1 3-1 5s2 2 2 4-1 2-1 4M16 4c0 2 1 3 1 5s-2 2-2 4 1 2 1 4"/>'],
+['waves','sport','<path d="M2 9c2 0 2-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2M2 15c2 0 2-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2"/>'],
+['hike','sport','<path d="M2 20l7-12 4 6 2-3 7 9z"/>'],
+['heart','health','<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>'],
+['pill','health','<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M12 9v6" transform="rotate(-45 12 12)"/>'],
+['sleep','health','<path d="M3 18V6M3 14h18v4M21 14v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>'],
+['tooth','health','<path d="M7 4c-2 0-3 2-3 4 0 3 1 4 1 7 0 2 1 4 2.5 4S10 18 12 18s1 3 2.5 3S18 19 18 16c0-3 1-4 1-7 0-2-1-4-3-4-2 0-2 1-3 1s-1-1-3-1z"/>'],
+['sun','health','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>'],
+['moon','health','<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'],
+['thermometer','health','<path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/>'],
+['medkit','health','<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/>'],
+['brain','health','<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 3 3 3 0 0 0 3-1V5a3 3 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 3 3 3 0 0 1-3-1"/>'],
+['eye','health','<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'],
+['book','mind','<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 5v16"/>'],
+['pencil','mind','<path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/>'],
+['bulb','mind','<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.3 1-1.8A6 6 0 0 0 12 3z"/>'],
+['music','mind','<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>'],
+['headphones','mind','<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>'],
+['meditate','mind','<path d="M12 4c2.5 2 3 5 0 8-3-3-2.5-6 0-8zM4 14c3 0 5 1 8 4 3-3 5-4 8-4-2 4-5 6-8 6s-6-2-8-6z"/>'],
+['camera','mind','<rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/>'],
+['paint','mind','<path d="M14 4l6 6-9 9H5v-6z"/><path d="M11 7l6 6"/>'],
+['leaf','mind','<path d="M5 19C5 10 10 5 20 4c0 10-5 15-14 15z"/><path d="M5 19l8-8"/>'],
+['journal','mind','<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>'],
+['chat','mind','<path d="M4 5h16v11H9l-5 4z"/>'],
+['laptop','work','<rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/>'],
+['briefcase','work','<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2M3 12h18"/>'],
+['code','work','<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>'],
+['globe','work','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'],
+['calendar','work','<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>'],
+['clock','work','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],
+['timer','work','<circle cx="12" cy="13" r="7"/><path d="M12 13V9M10 3h4"/>'],
+['checklist','work','<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l2.5 2.5L16 9"/>'],
+['cap','work','<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 2 3 3 6 3s6-1 6-3v-5"/>'],
+['trophy','work','<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M10 17h4"/>'],
+['star','work','<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>'],
+['target','work','<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'],
+['chart','work','<path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/>'],
+['phone','work','<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/>'],
+['home','home','<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>'],
+['broom','home','<path d="M14 4l-6 9"/><path d="M8 13l-3 7 3 1 3-4 3-3z"/>'],
+['plant','home','<path d="M12 21V11M12 11c-4 0-6-3-6-6 4 0 6 3 6 6zM12 13c0-4 3-6 7-6 0 4-3 6-7 6z"/>'],
+['flower','home','<circle cx="12" cy="8" r="2.5"/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="12" r="2.5"/><circle cx="12" cy="16" r="2.5"/><path d="M12 18v4"/>'],
+['bath','home','<path d="M3 12h18v3a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5zM6 12V6a2 2 0 0 1 4 0M7 20l-1 2M17 20l1 2"/>'],
+['shirt','home','<path d="M8 3l-5 3 2 4 2-1v12h10V9l2 1 2-4-5-3c-1 2-7 2-8 0z"/>'],
+['washer','home','<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6h2"/>'],
+['key','home','<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>'],
+['cat','home','<path d="M5 9l1-5 4 3h4l4-3 1 5c1 1.5 1 4 1 6a7 7 0 0 1-14 0c0-2 0-4.5 1-6z"/><path d="M9 14h.01M15 14h.01"/>'],
+['paw','home','<circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5c0 1.5-1 2.5-2 2.5h-4c-1 0-2-1-2-2.5z"/>'],
+['people','social','<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 5a3 3 0 0 1 0 6M18 14c2 .7 3 3 3 6"/>'],
+['call','social','<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>'],
+['gift','social','<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8c-2-4-6-4-5-1 .5 1 5 1 5 1zM12 8c2-4 6-4 5-1-.5 1-5 1-5 1z"/>'],
+['mail','social','<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'],
+['bell','social','<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>'],
+['coin','money','<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.2-.5-2.7-1.5M12 6v2M12 16v2"/>'],
+['wallet','money','<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/>'],
+['piggy','money','<path d="M5 11a7 6 0 0 1 13-2l2 1v4l-2 1-1 3h-3v-2h-4v2H6l-1-3z"/>'],
+['card','money','<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>'],
+['cart','money','<path d="M3 4h2l2.5 11h10L20 7H7"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>'],
+['bag','money','<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'],
+['growth','money','<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>'],
+['tree','nature','<path d="M12 21v-6M12 15c-4 0-6-3-6-6 0-3 2-5 6-7 4 2 6 4 6 7 0 3-2 6-6 6z"/>'],
+['cloud','nature','<path d="M7 18h11a4 4 0 0 0 0-8 6 6 0 0 0-11.5 1.5A3.5 3.5 0 0 0 7 18z"/>'],
+['snow','nature','<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/>'],
+['fire','nature','<path d="M12 21c-4 0-6-3-6-6 0-4 4-6 4-11 3 2 5 5 5 8 1-1 1.5-2 1.5-3 2 2 3 4 3 6 0 4-3 6-7 6z"/>'],
+['bird','nature','<path d="M3 13c3-5 8-6 12-4l4-2-1 4c1 3-1 7-5 8l-3 1-2-3-3-1z"/>'],
+['sunrise','nature','<path d="M4 17a8 8 0 0 1 16 0M2 21h20M12 4v3M5 9l2 2M19 9l-2 2"/>'],
+['gamepad','fun','<path d="M7 9h10a5 5 0 0 1 5 5 3 3 0 0 1-5 2l-2-2h-4l-2 2a3 3 0 0 1-5-2 5 5 0 0 1 5-5z"/><path d="M8 12v2M7 13h2M15 12.5h.01M17 13.5h.01"/>'],
+['car','fun','<path d="M5 16V12l2-5h10l2 5v4M3 16h18M7 16v2M17 16v2"/><circle cx="7.5" cy="13" r=".8"/><circle cx="16.5" cy="13" r=".8"/>'],
+['plane','fun','<path d="M10 14L3 11V9l7 1 2-6h2l-1 6 6-1v2l-6 3 1 6h-2z"/>'],
+['film','fun','<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M7 7l2-4 3 3 3-3 2 4"/>'],
+['crown','fun','<path d="M3 8l4 4 5-6 5 6 4-4-2 11H5z"/>'],
+['ban','quit','<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>'],
+['cigarette','quit','<path d="M3 13h13v4H3z"/><path d="M16 13v-1M19 10c1-1-1-2 0-4"/><path d="M4 4l16 16"/>'],
+['phoneoff','quit','<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M3 3l18 18"/>'],
+['wineoff','quit','<path d="M7 3h10c0 5-2 8-5 8S7 8 7 3z"/><path d="M12 11v9M8 21h8M3 3l18 18"/>']
+];
+const ICM=Object.fromEntries(IC.map(([k,,m])=>[k,m]));
+function icoSvg(k){const m=ICM[k];return m?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${m}</svg>`:''}
+function openIcons(){
+  const T=TI[lang()]||TI.ru;
+  $('ish').textContent=T.iconTitle;
+  $('ig').innerHTML='<button data-ic="" class="'+(pi?'':'on')+'" aria-label="-">—</button>'+IC.map(([k])=>`<button data-ic="${k}" class="${pi===k?'on':''}" aria-label="${k}">${icoSvg(k)}</button>`).join('');
+  $('ipk').hidden=false;
+}
+$('ipk').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-ic]');
+  if(b){pi=b.dataset.ic||null;$('ipk').hidden=true;drawDots();return}
+  if(e.target.id==='ipk')$('ipk').hidden=true;
+});
+$('cl').addEventListener('click',e=>{if(e.target.closest('#ib'))openIcons()});
+function drawDots(){
+  const T=TI[lang()]||TI.ru,C=TX[lang()];
+  $('cl').innerHTML=`<button class="isw" id="ib" aria-label="${T.icon}">${pi?icoSvg(pi):'+'}</button><button class="sw" id="sw" style="--c:${pc}" aria-label="${C.color}"><i></i>${C.color}</button><button class="go" id="go">${C.add}</button>`;
+}
+function todayView(){
+  const T=TX[lang()],k=kd(today),L=S.habits.filter(h=>due(h,today)),dn=L.filter(h=>done(h,today)).length,tot=L.length,p=tot?dn/tot:0,R=44,C=2*Math.PI*R;
+  let msg=T.mNone;
+  if(tot&&dn===tot)msg=T.mAll;
+  else if(tot){const r=L.filter(h=>!done(h,today)).map(h=>({h,s:streaks(h)})).sort((a,b)=>b.s.c-a.s.c)[0];msg=r.s.c>=3?T.mKeep(r.h.name,r.s.c+' '+unitOf(r.h)):T.mLeft(tot-dn)}
+  const tiles=L.map(b=>{const s=streaks(b),v=b.days[k]||0,on=done(b,today);
+    const sub=b.kind==='timer'?tsub(b):b.kind==='count'?`${v} ${T.of} ${b.goal} ${esc(b.unit||'')}`:b.kind==='quit'?(v?T.slip:T.clean(s.c)):`${T.streak}: ${s.c} ${unitOf(b)}`;
+    const bar=(b.kind==='count'||b.kind==='timer')?`<i class="bar"><u style="width:${Math.min(100,(b.kind==='timer'?live(b):v)/b.goal*100)}%"></u></i>`:'';
+    const mark=on?'✓':b.kind==='timer'?(TM[b.id]?'⏸':'▶'):(b.icon?icoSvg(b.icon):'');
+    return `<button class="tile${on?' on':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${mark}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>`}).join('');
+  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="tiles">${tiles}</div>`;
+}
 applyLang();applyLook();formUI();drawDots();render();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
