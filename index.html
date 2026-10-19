@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#f5f6f1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="В клетку">
-<title>В клетку — трекер привычек</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#f5f6f1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Habits">
+<title>Habits — трекер привычек</title>
 <style>
 :root{--bg:#f5f6f1;--grid:#dde4ea;--ink:#1d2740;--mute:#667189;--card:#fff;--line:#cfd8e1;--off:#eaeef2;--acc:#3b5bdb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--grid:#1c2230;--ink:#e7ebf5;--mute:#93a0ba;--card:#1a1f2b;--line:#2c3547;--off:#232a39;--acc:#8aa0ff;color-scheme:dark}}
@@ -82,8 +82,10 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .sheet{background:var(--card);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));width:100%;max-width:420px}.sh{font-weight:700;margin-bottom:12px}
 .pg{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}.pg button{aspect-ratio:1;border-radius:6px;border:1px solid var(--line);background:var(--c);padding:0}.pg button.on{outline:2px solid var(--ink);outline-offset:1px}
 .wrap{padding-bottom:120px}
-.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;gap:4px;padding:8px;border-radius:30px;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.18)}
-.dock button{width:58px;height:50px;border:0;border-radius:24px;background:none;display:grid;place-items:center;color:var(--mute)}.dock button.on{background:var(--ink);color:var(--bg)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;gap:4px;padding:8px;border-radius:30px;background:color-mix(in srgb,var(--card) calc(var(--dock-a,82)*1%),transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.18)}
+.dock .pill{position:absolute;top:8px;height:50px;border-radius:24px;background:var(--ink);pointer-events:none;z-index:0;transition:left .5s cubic-bezier(.34,1.45,.5,1),width .5s cubic-bezier(.34,1.45,.5,1)}
+.dock button{position:relative;z-index:1;width:58px;height:50px;border:0;border-radius:24px;background:none;display:grid;place-items:center;color:var(--mute);transition:transform .25s cubic-bezier(.34,1.56,.64,1),color .3s}
+.dock button:active{transform:scale(.84)}.dock button svg{transition:transform .45s cubic-bezier(.34,1.56,.64,1)}.dock button.on{color:var(--bg)}.dock button.on svg{transform:scale(1.1)}
 .dock svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .tile{position:relative;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.tile>*{position:relative}.tile .fill{position:absolute;inset:0 auto 0 0;width:calc(var(--f,0)*100%);background:color-mix(in srgb,var(--c) 38%,transparent);opacity:0;pointer-events:none}.tile.drag .fill{opacity:1}.tile.drag{transform:scale(1.02)}.tile:not(.on) .mk{color:var(--c)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.cal i{font-style:normal;text-align:center;font-size:12px;color:var(--mute)}
@@ -95,19 +97,21 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .ac{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}.ac.lock{opacity:.45}
 .toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;z-index:40;font-weight:600}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.pal2{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:6px}.bgs{aspect-ratio:1;border-radius:50%;border:1px solid var(--line);padding:0}.bgs.on{outline:2px solid var(--ink);outline-offset:2px}
+.rst{background:var(--off);border:0;border-radius:10px;padding:10px;font-weight:600;color:var(--ink)}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="top"><h1>В клетку</h1><button class="ib" id="th" aria-label="Сменить тему">◐</button></div>
+  <div class="top"><h1>Habits</h1><button class="ib" id="th" aria-label="Сменить тему">◐</button></div>
   <div class="nav"><button class="ib" id="pv" aria-label="Назад">‹</button><div class="lbl" id="lb"></div><button class="ib" id="nx" aria-label="Вперёд">›</button></div>
   <div class="tabs"><button id="tt" class="on">Сегодня</button><button id="tm">Месяц</button><button id="ty">Год</button></div>
 </header>
 <main id="app"></main>
 <div id="pal" class="pal" hidden><div class="sheet"><div class="sh">Выберите цвет</div><div class="pg" id="pg"></div></div></div>
-<nav class="dock" id="dock" aria-label="Разделы"><button data-pg="habits" class="on" aria-label="Привычки"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg></button><button data-pg="cal" aria-label="Календарь"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button data-pg="food" aria-label="Питание"><svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 002 2v8M11 3v8a2 2 0 01-2 2M17 21V3c-2.5 1.5-3 5-3 8h3"/></svg></button><button data-pg="ana" aria-label="Аналитика"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></button><button data-pg="set" aria-label="Настройки"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></button></nav>
+<nav class="dock" id="dock" aria-label="Разделы"><i class="pill"></i><button data-pg="habits" class="on" aria-label="Привычки"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg></button><button data-pg="cal" aria-label="Календарь"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button data-pg="food" aria-label="Питание"><svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 002 2v8M11 3v8a2 2 0 01-2 2M17 21V3c-2.5 1.5-3 5-3 8h3"/></svg></button><button data-pg="ana" aria-label="Аналитика"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></button><button data-pg="set" aria-label="Личное пространство"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.6-4 3.6-6.5 7.5-6.5s6.9 2.5 7.5 6.5"/></svg></button></nav>
 <canvas id="fx"></canvas><div class="toast" id="toast" hidden></div>
 <div class="wrap" style="padding:0" id="addbox">
   <div class="add">
@@ -258,6 +262,8 @@ $('app').addEventListener('click',e=>{
     if(t.classList.contains('sure')){S.habits=S.habits.filter(x=>x.id!==t.dataset.del);save();render()}
     else{t.classList.add('sure');t.textContent='Точно удалить?';setTimeout(()=>{t.classList.remove('sure');t.textContent='Удалить'},3000)}
   }
+  else if(t.dataset.bg){S.look=S.look||{};S.look.bg=t.dataset.bg;applyLook();save();render()}
+  else if(t.hasAttribute('data-reset')){S.look={};applyLook();save();render()}
   else if(t.id==='demo')demo();
 });
 $('cl').addEventListener('click',e=>{
@@ -344,7 +350,7 @@ const soon=(e,t,p)=>`<div class="card soon"><div class="em">${e}</div><h2>${t}</
 function setView(){
   const P=S.prof||{},hs=history();
   const ac=ACH.map(a=>`<div class="ac${hs.got[a.id]?'':' lock'}"><span>${hs.got[a.id]?'🏆':'🔒'} ${a.t}</span><span>${hs.got[a.id]||'—'}</span></div>`).join('');
-  return `<div class="set"><div class="card"><h2>Профиль</h2><div class="set"><label>Имя или ник<input data-p="name" maxlength="30" value="${esc(P.name||'')}"></label><label>Почта<input data-p="email" type="email" placeholder="name@mail.ru" value="${esc(P.email||'')}"></label><label>Телефон<input data-p="phone" type="tel" placeholder="+7 ___ ___-__-__" value="${esc(P.phone||'')}"></label></div><p class="note" style="text-align:left">Пока сохраняется только на этом устройстве. Подтверждение почты и номера появится вместе с аккаунтом.</p></div><div class="card"><h2>Язык</h2><select data-p="lang"><option value="ru"${P.lang==='en'?'':' selected'}>Русский</option><option value="en"${P.lang==='en'?' selected':''}>English (скоро)</option></select></div><div class="card"><h2>Виджеты</h2><p class="note" style="text-align:left">Виджеты появятся в следующих версиях.</p></div><div class="card"><h2>История ачивок</h2>${ac}</div></div>`;
+  return `<div class="set"><div class="card"><h2>Оформление</h2><div class="set"><label>Цвет фона<div class="pal2">${GB.map(c=>`<button class="bgs${(S.look||{}).bg===c?' on':''}" style="background:${c}" data-bg="${c}" aria-label="Фон ${c}"></button>`).join('')}</div></label><label>Прозрачность панели: <b id="dv">${dockT()}</b>%<input type="range" min="0" max="100" value="${dockT()}" data-dock></label><button class="rst" data-reset>Сбросить оформление</button></div></div><div class="card"><h2>Профиль</h2><div class="set"><label>Имя или ник<input data-p="name" maxlength="30" value="${esc(P.name||'')}"></label><label>Почта<input data-p="email" type="email" placeholder="name@mail.ru" value="${esc(P.email||'')}"></label><label>Телефон<input data-p="phone" type="tel" placeholder="+7 ___ ___-__-__" value="${esc(P.phone||'')}"></label></div><p class="note" style="text-align:left">Пока сохраняется только на этом устройстве. Подтверждение почты и номера появится вместе с аккаунтом.</p></div><div class="card"><h2>Язык</h2><select data-p="lang"><option value="ru"${P.lang==='en'?'':' selected'}>Русский</option><option value="en"${P.lang==='en'?' selected':''}>English (скоро)</option></select></div><div class="card"><h2>Виджеты</h2><p class="note" style="text-align:left">Виджеты появятся в следующих версиях.</p></div><div class="card"><h2>История ачивок</h2>${ac}</div></div>`;
 }
 function pageView(){
   if(page==='cal')return calView();
@@ -352,7 +358,10 @@ function pageView(){
   if(page==='ana')return soon('📊','Аналитика питания','Разбор раздела «Питание» будет здесь. Пока в разработке.');
   return setView();
 }
+function moveDock(){const b=document.querySelector('#dock button.on'),p=document.querySelector('#dock .pill');if(!b||!p)return;p.style.left=b.offsetLeft+'px';p.style.width=b.offsetWidth+'px'}
+addEventListener('resize',moveDock);
 function chrome(){
+  requestAnimationFrame(moveDock);
   const h=page==='habits';
   document.querySelector('.tabs').hidden=!h;$('addbox').hidden=!h;
   document.querySelectorAll('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.pg===page));
@@ -386,8 +395,26 @@ addEventListener('pointerup',()=>{if(!dg)return;clearTimeout(dg.tm);const d=dg;d
   change(b,today,()=>{if(f>=.85)b.days[k]=cnt?Math.max(b.goal,b.days[k]||0):1;else if(cnt&&f>.05)b.days[k]=Math.min(b.goal,Math.round(f*b.goal/st)*st)})});
 addEventListener('pointercancel',()=>{if(dg){clearTimeout(dg.tm);dg.t.classList.remove('drag');dg=null}});
 $('dock').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.pg;scrollTo(0,0);render()}};
-$('app').addEventListener('input',e=>{const p=e.target.dataset.p;if(p){S.prof=S.prof||{};S.prof[p]=e.target.value;save()}});
-formUI();drawDots();render();
+$('app').addEventListener('input',e=>{const p=e.target.dataset.p;if(p){S.prof=S.prof||{};S.prof[p]=e.target.value;save()}if(e.target.dataset.dock!==undefined){S.look=S.look||{};S.look.t=+e.target.value;$('dv').textContent=e.target.value;applyLook();save()}});
+const GB=['#f5f6f1','#ffffff','#fdf2f2','#fff4e6','#fff9db','#ebfbee','#e6fcf5','#e7f5ff','#f3f0ff','#fff0f6','#2b2d42','#12151c'];
+function dockT(){return S.look&&S.look.t!=null?S.look.t:18}
+function hx(c){const n=parseInt(c.slice(1),16);return[(n>>16)&255,(n>>8)&255,n&255]}
+function mix(a,b,p){const A=hx(a),B=hx(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*p).toString(16).padStart(2,'0')).join('')}
+function applyLook(){
+  const r=document.documentElement.style,bg=(S.look||{}).bg;
+  if(!bg){['--bg','--ink','--mute','--card','--line','--grid','--off'].forEach(v=>r.removeProperty(v))}
+  else{const[a,b,c]=hx(bg),lt=(0.299*a+0.587*b+0.114*c)/255>.55;
+    r.setProperty('--bg',bg);
+    r.setProperty('--ink',lt?'#1d2740':'#e7ebf5');
+    r.setProperty('--mute',lt?'#667189':'#93a0ba');
+    r.setProperty('--card',lt?mix(bg,'#ffffff',.55):mix(bg,'#ffffff',.08));
+    r.setProperty('--line',lt?mix(bg,'#000000',.14):mix(bg,'#ffffff',.18));
+    r.setProperty('--grid',lt?mix(bg,'#000000',.06):mix(bg,'#ffffff',.06));
+    r.setProperty('--off',lt?mix(bg,'#000000',.07):mix(bg,'#ffffff',.1));
+  }
+  r.setProperty('--dock-a',String(100-dockT()));
+}
+applyLook();formUI();drawDots();render();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </body>
