@@ -105,13 +105,15 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .tg{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}.tg:first-child{border-top:0}.tg input{width:22px;height:22px;accent-color:var(--acc);flex:none}
 .isw{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0;font-size:20px;flex:none}.isw svg{width:22px;height:22px}
 .ig{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;max-height:60vh;overflow-y:auto}.ig button{aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:7px}.ig button.on{outline:2px solid var(--acc);outline-offset:1px}.ig svg{width:100%;height:100%}.mk svg{width:20px;height:20px}
+.isw{width:auto;min-width:40px;padding:0 8px}.trio{display:flex;gap:4px}.isw .trio svg{width:13px;height:13px}
+.tile.ed{outline:2px dashed var(--acc);outline-offset:-2px}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="top"><h1>Habits</h1><button class="ib" id="th" aria-label="Сменить тему">◐</button></div>
+  <div class="top"><h1>Habits</h1></div>
   <div class="nav"><button class="ib" id="pv" aria-label="Назад">‹</button><div class="lbl" id="lb"></div><button class="ib" id="nx" aria-label="Вперёд">›</button></div>
   <div class="tabs"><button id="tt" class="on">Сегодня</button><button id="tm">Месяц</button><button id="ty">Год</button></div>
 </header>
@@ -261,6 +263,12 @@ function drawDots(){
 }
 $('app').addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.h&&editMode&&view==='today'){editId=t.dataset.h;page='edit';render();return}
+  if(t.hasAttribute('data-edtoggle')){editMode=!editMode;render();return}
+  if(t.hasAttribute('data-ed-back')){page='habits';editId=null;render();return}
+  if(t.dataset.hcol){const b=S.habits.find(x=>x.id===t.dataset.hcol);if(b){b.color=t.dataset.c;save();render()}return}
+  if(t.dataset.hic!==undefined){const b=S.habits.find(x=>x.id===t.dataset.hic);if(b){b.icon=t.dataset.k||null;save();render()}return}
+  if(t.dataset.hdel){if(t.dataset.arm){S.habits=S.habits.filter(x=>x.id!==t.dataset.hdel);save();editId=null;page='habits';render()}else{t.dataset.arm='1';t.textContent=TE[lang()].sure}return}
   if(t.dataset.h){if(Date.now()-sw<400)return;const b=S.habits.find(x=>x.id===t.dataset.h);
     if(b.kind==='timer'&&t.classList.contains('tile')){TM[b.id]?stopT(b):TM[b.id]=Date.now();render();return}
     const sc=$('sc'),sl=sc?sc.scrollLeft:0;change(b,new Date(t.dataset.k+'T00:00:00'),()=>bump(b,t.dataset.k));if($('sc'))$('sc').scrollLeft=sl}
@@ -284,7 +292,7 @@ $('nm').addEventListener('keydown',e=>{if(e.key==='Enter')addHabit()});
 const step=n=>{if(view==='month'||page==='cal')cur.setMonth(cur.getMonth()+n);else cur.setFullYear(cur.getFullYear()+n);render()};
 $('pv').onclick=()=>step(-1);$('nx').onclick=()=>step(1);
 $('tm').onclick=()=>{view='month';render()};$('ty').onclick=()=>{view='year';render()};
-$('th').onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark'};
+if($('th'))$('th').onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark'};
 function bump(b,k){
   const v=b.days[k]||0;
   if(b.kind==='timer'){if(v>=b.goal)delete b.days[k];else b.days[k]=b.goal}
@@ -395,7 +403,7 @@ function stopT(b){const k=kd(today),el=(Date.now()-TM[b.id])/60000;delete TM[b.i
 setInterval(()=>{for(const id in TM){const b=S.habits.find(x=>x.id===id);if(!b){delete TM[id];continue}
   if(live(b)>=b.goal){stopT(b);continue}
   const t=document.querySelector(`.tile[data-h="${id}"]`);if(t){t.querySelector('small').textContent=tsub(b);const u=t.querySelector('.bar u');if(u)u.style.width=Math.min(100,live(b)/b.goal*100)+'%'}}},1000);
-$('app').addEventListener('pointerdown',e=>{const t=e.target.closest('.tile');if(!t)return;const b=S.habits.find(x=>x.id===t.dataset.h);if(!b||b.kind==='quit')return;
+$('app').addEventListener('pointerdown',e=>{const t=e.target.closest('.tile');if(!t)return;if(editMode&&view==='today')return;const b=S.habits.find(x=>x.id===t.dataset.h);if(!b||b.kind==='quit')return;
   dg={t,b,x:e.clientX,y:e.clientY,on:false,f:0,tm:setTimeout(()=>{if(dg){dg.on=true;t.classList.add('drag');navigator.vibrate&&navigator.vibrate(12)}},260)}});
 addEventListener('pointermove',e=>{if(!dg)return;
   if(!dg.on){if(Math.abs(e.clientX-dg.x)>10||Math.abs(e.clientY-dg.y)>10){clearTimeout(dg.tm);dg=null}return}
@@ -710,6 +718,51 @@ function todayView(){
     const mark=on?'✓':b.kind==='timer'?(TM[b.id]?'⏸':'▶'):(b.icon?icoSvg(b.icon):'');
     return `<button class="tile${on?' on':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${mark}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>`}).join('');
   return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="tiles">${tiles}</div>`;
+}
+let editMode=false,editId=null;
+const TE={ru:{name:'Название',icon:'Иконка',delete:'Удалить трекер',sure:'Точно удалить?',edit:'Изменить',done:'Готово'},en:{name:'Name',icon:'Icon',delete:'Delete tracker',sure:'Sure?',edit:'Edit',done:'Done'}};
+const PENCIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z"/></svg>';
+$('app').addEventListener('input',e=>{
+  const d=e.target.dataset,id=d.hname||d.hgoal||d.hunit,b=id&&S.habits.find(x=>x.id===id);
+  if(!b)return;
+  if(d.hname)b.name=e.target.value.trim()||b.name;
+  if(d.hgoal)b.goal=Math.max(1,+e.target.value||1);
+  if(d.hunit)b.unit=e.target.value;
+  save();
+});
+function editView(){
+  const E=TE[lang()],T=TX[lang()],b=S.habits.find(x=>x.id===editId);
+  if(!b)return '';
+  $('lb').textContent=b.name;
+  const cols=GS.map(c=>`<button class="${b.color===c?'on':''}" style="--c:${c}" data-hcol="${b.id}" data-c="${c}" aria-label="${c}"></button>`).join('');
+  const ics=`<button data-hic="${b.id}" data-k="" class="${b.icon?'':'on'}" aria-label="-">—</button>`+IC.map(([k])=>`<button data-hic="${b.id}" data-k="${k}" class="${b.icon===k?'on':''}" aria-label="${k}">${icoSvg(k)}</button>`).join('');
+  const cnt=(b.kind==='count'||b.kind==='timer')?`<div class="card"><label class="cust">${T.cxGoal}<input type="number" min="1" data-hgoal="${b.id}" value="${b.goal}"></label>${b.kind==='count'?`<label class="cust">${T.cxUnit}<input maxlength="12" data-hunit="${b.id}" value="${esc(b.unit||'')}"></label>`:''}</div>`:'';
+  return `<div class="set"><button class="back" data-ed-back>‹ ${T.tToday}</button><h2 class="st">${esc(b.name)}</h2><div class="card"><label class="cust">${E.name}<input maxlength="40" data-hname="${b.id}" value="${esc(b.name)}"></label></div><div class="card"><h2>${T.color}</h2><div class="pg">${cols}</div></div><div class="card"><h2>${E.icon}</h2><div class="ig">${ics}</div></div>${cnt}<button class="rst" data-hdel="${b.id}">${E.delete}</button></div>`;
+}
+function pageView(){
+  const T=TX[lang()];
+  if(page==='edit')return editView();
+  if(page==='cal')return calView();
+  if(page==='food')return soon('🥗',T.food,T.foodT);
+  if(page==='ana')return soon('📊',T.ana,T.anaT);
+  return setView();
+}
+function drawDots(){
+  const T=TI[lang()]||TI.ru,C=TX[lang()];
+  const mark=pi?icoSvg(pi):'<span class="trio">'+['drop','run','book'].map(k=>icoSvg(k)).join('')+'</span>';
+  $('cl').innerHTML=`<button class="isw" id="ib" aria-label="${T.icon}">${mark}</button><button class="sw" id="sw" style="--c:${pc}" aria-label="${C.color}"><i></i>${C.color}</button><button class="go" id="go">${C.add}</button>`;
+}
+function todayView(){
+  const T=TX[lang()],E=TE[lang()],k=kd(today),L=S.habits.filter(h=>due(h,today)),dn=L.filter(h=>done(h,today)).length,tot=L.length,p=tot?dn/tot:0,R=44,C=2*Math.PI*R;
+  let msg=T.mNone;
+  if(tot&&dn===tot)msg=T.mAll;
+  else if(tot){const r=L.filter(h=>!done(h,today)).map(h=>({h,s:streaks(h)})).sort((a,b)=>b.s.c-a.s.c)[0];msg=r.s.c>=3?T.mKeep(r.h.name,r.s.c+' '+unitOf(r.h)):T.mLeft(tot-dn)}
+  const tiles=L.map(b=>{const s=streaks(b),v=b.days[k]||0,on=done(b,today);
+    const sub=b.kind==='timer'?tsub(b):b.kind==='count'?`${v} ${T.of} ${b.goal} ${esc(b.unit||'')}`:b.kind==='quit'?(v?T.slip:T.clean(s.c)):`${T.streak}: ${s.c} ${unitOf(b)}`;
+    const bar=(b.kind==='count'||b.kind==='timer')?`<i class="bar"><u style="width:${Math.min(100,(b.kind==='timer'?live(b):v)/b.goal*100)}%"></u></i>`:'';
+    const mark=editMode?PENCIL:on?'✓':b.kind==='timer'?(TM[b.id]?'⏸':'▶'):(b.icon?icoSvg(b.icon):'');
+    return `<button class="tile${on?' on':''}${editMode?' ed':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${mark}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>`}).join('');
+  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="row" style="justify-content:flex-end;margin:0 0 8px"><button class="chip" data-edtoggle>${editMode?E.done:E.edit}</button></div><div class="tiles">${tiles}</div>`;
 }
 applyLang();applyLook();formUI();drawDots();render();
 </script>
