@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#f5f6f1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Habits">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#f5f6f1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Habits">
 <title>Habits — трекер привычек</title>
 <style>
 :root{--bg:#f5f6f1;--grid:#dde4ea;--ink:#1d2740;--mute:#667189;--card:#fff;--line:#cfd8e1;--off:#eaeef2;--acc:#3b5bdb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -102,6 +102,7 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .mi{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:8px;text-align:left;color:var(--ink);font:inherit;font-size:16px}.mv{color:var(--mute);font-size:14px}
 .back{background:none;border:0;color:var(--acc);font:inherit;font-weight:600;padding:6px 0;text-align:left}.st{font-size:22px;margin:4px 0 12px}
 .cust{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;margin:6px 0}.cust input[type=color]{width:44px;height:32px;border:0;background:none;padding:0}
+.tg{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}.tg:first-child{border-top:0}.tg input{width:22px;height:22px;accent-color:var(--acc);flex:none}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
@@ -265,8 +266,9 @@ $('app').addEventListener('click',e=>{
     if(t.classList.contains('sure')){S.habits=S.habits.filter(x=>x.id!==t.dataset.del);save();render()}
     else{t.classList.add('sure');t.textContent='Точно удалить?';setTimeout(()=>{t.classList.remove('sure');t.textContent='Удалить'},3000)}
   }
-  else if(t.dataset.sub){sub=t.dataset.sub;render()}
-  else if(t.hasAttribute('data-back')){sub=null;render()}
+  else if(t.dataset.sub){sub=t.dataset.sub;subS=null;render()}
+  else if(t.dataset.subs){subS=t.dataset.subs;render()}
+  else if(t.hasAttribute('data-back')){if(subS)subS=null;else sub=null;render()}
   else if(t.dataset.bg){S.look=S.look||{};S.look.bg=t.dataset.bg;applyLook();save();render()}
   else if(t.hasAttribute('data-reset')){S.look={};applyLook();save();render()}
   else if(t.id==='demo')demo();
@@ -394,12 +396,12 @@ $('app').addEventListener('pointerdown',e=>{const t=e.target.closest('.tile');if
   dg={t,b,x:e.clientX,y:e.clientY,on:false,f:0,tm:setTimeout(()=>{if(dg){dg.on=true;t.classList.add('drag');navigator.vibrate&&navigator.vibrate(12)}},260)}});
 addEventListener('pointermove',e=>{if(!dg)return;
   if(!dg.on){if(Math.abs(e.clientX-dg.x)>10||Math.abs(e.clientY-dg.y)>10){clearTimeout(dg.tm);dg=null}return}
-  const r=dg.t.getBoundingClientRect();dg.f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));dg.t.style.setProperty('--f',dg.f)});
+  const r=dg.t.getBoundingClientRect();dg.f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));dg.t.style.setProperty('--f',dg.f);const lv=Math.round(dg.f*10);if(lv!==dg.lv){dg.lv=lv;buzz('prog')}});
 addEventListener('pointerup',()=>{if(!dg)return;clearTimeout(dg.tm);const d=dg;dg=null;if(!d.on)return;sw=Date.now();d.t.classList.remove('drag');
   const b=d.b,k=kd(today),f=d.f,cnt=b.kind==='count'||b.kind==='timer',st=b.kind==='timer'?1:(b.step||1);
   change(b,today,()=>{if(f>=.85)b.days[k]=cnt?Math.max(b.goal,b.days[k]||0):1;else if(cnt&&f>.05)b.days[k]=Math.min(b.goal,Math.round(f*b.goal/st)*st)})});
 addEventListener('pointercancel',()=>{if(dg){clearTimeout(dg.tm);dg.t.classList.remove('drag');dg=null}});
-$('dock').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.pg;sub=null;scrollTo(0,0);render()}};
+$('dock').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.pg;sub=null;subS=null;scrollTo(0,0);render()}};
 $('app').addEventListener('input',e=>{const d=e.target.dataset;if(d.p){S.prof=S.prof||{};S.prof[d.p]=e.target.value;save();if(d.p==='lang'){applyLang();render()}}if(d.dock!==undefined){S.look=S.look||{};S.look.t=+e.target.value;$('dv').textContent=e.target.value;applyLook();save()}if(d.cbg){S.look=S.look||{};S.look.bg=e.target.value;applyLook();save()}});
 const GB=['#f5f6f1','#ffffff','#fdf2f2','#fff4e6','#fff9db','#ebfbee','#e6fcf5','#e7f5ff','#f3f0ff','#fff0f6','#2b2d42','#12151c'];
 function dockT(){return S.look&&S.look.t!=null?S.look.t:18}
@@ -539,6 +541,37 @@ function pageView(){
   if(page==='ana')return soon('📊',T.ana,T.anaT);
   return setView();
 }
+let subS=null;
+const TH={
+ru:{personal:'Личное пространство',haptics:'Вибрация',hapProg:'Вибрация при заполнении привычки',hapDone:'Вибрация при достижении цели',hapNav:'Вибрация при переходе между разделами',hapNote:'Вибрация работает на Android. Браузеры на iPhone не дают сайтам вибрировать, поэтому эти пункты там ничего не делают.'},
+en:{personal:'Personal space',haptics:'Haptics',hapProg:'Haptics while filling a habit',hapDone:'Haptics on completing a goal',hapNav:'Haptics when switching sections',hapNote:'Vibration works on Android. iPhone browsers do not let websites vibrate, so these switches have no effect there.'}};
+const HP={prog:[12],done:[30,60,30],nav:[8]};
+function buzz(k){const h=S.haptic||{};if(h[k]===false||!navigator.vibrate)return;navigator.vibrate(HP[k])}
+function change(b,dt,fn){const k=kd(dt),bf=history().got,was=done(b,dt),v0=b.days[k]||0;fn();save();render();const now=done(b,dt);if(!was&&now&&b.kind!=='quit'){buzz('done');win(bf)}else if((b.days[k]||0)!==v0)buzz('prog')}
+function setView(){
+  const P=S.prof||{},hs=history(),T=TX[lang()],H=TH[lang()]||TH.ru,L=lang(),hp=S.haptic||{};
+  const rows=(list,attr)=>list.map(([k,n,v])=>`<button class="mi" data-${attr}="${k}"><span>${n}</span><span class="mv">${esc(v||'')} ›</span></button>`).join('');
+  if(!sub)return `<div class="set"><h2 class="st">${H.personal}</h2>${rows([['profile',T.profile,P.name],['settings',T.setT,''],['ach',T.ach,'']],'sub')}</div>`;
+  if(sub==='settings'&&!subS)return `<div class="set"><button class="back" data-back>‹ ${H.personal}</button><h2 class="st">${T.setT}</h2>${rows([['lang',T.lang,L==='en'?T.langEn:T.langRu],['look',T.look,''],['widgets',T.widgets,''],['haptics',H.haptics,'']],'subs')}</div>`;
+  const parent=sub==='settings'?T.setT:H.personal;
+  let title,body='';
+  if(sub==='settings'){
+    title={lang:T.lang,look:T.look,widgets:T.widgets,haptics:H.haptics}[subS];
+    if(subS==='lang')body=`<div class="card"><select data-p="lang"><option value="ru"${L==='en'?'':' selected'}>${T.langRu}</option><option value="en"${L==='en'?' selected':''}>${T.langEn}</option></select></div>`;
+    else if(subS==='look'){const bg=(S.look||{}).bg,t=dockT();body=`<div class="card"><h2>${T.bgT}</h2><div class="pg">${GS.map(c=>`<button class="${c===bg?'on':''}" style="--c:${c}" data-bg="${c}" aria-label="${c}"></button>`).join('')}</div><label class="cust">${T.custom}<input type="color" data-cbg value="${bg||'#f5f6f1'}"></label></div><div class="card"><label class="cust">${T.trans}: <b id="dv">${t}</b>%<input type="range" min="0" max="100" value="${t}" data-dock></label></div><button class="rst" data-reset>${T.reset}</button>`}
+    else if(subS==='widgets')body=`<div class="card"><p class="note" style="text-align:left">${T.widNote}</p></div>`;
+    else body=`<div class="card">${[['prog',H.hapProg],['done',H.hapDone],['nav',H.hapNav]].map(([k,n])=>`<label class="tg"><span>${n}</span><input type="checkbox" data-hap="${k}"${hp[k]===false?'':' checked'}></label>`).join('')}<p class="note" style="text-align:left">${H.hapNote}</p></div>`;
+  } else if(sub==='profile'){
+    title=T.profile;
+    body=`<div class="card"><div class="set"><label>${T.name}<input data-p="name" maxlength="30" value="${esc(P.name||'')}"></label><label>${T.email}<input data-p="email" type="email" placeholder="name@mail.ru" value="${esc(P.email||'')}"></label><label>${T.phone}<input data-p="phone" type="tel" placeholder="+7 ___ ___-__-__" value="${esc(P.phone||'')}"></label></div><p class="note" style="text-align:left">${T.profNote}</p></div>`;
+  } else {
+    title=T.ach;
+    body=`<div class="card"><h2>${T.achT}</h2>${ACH.map(a=>`<div class="ac${hs.got[a.id]?'':' lock'}"><span>${hs.got[a.id]?'🏆':'🔒'} ${achName(a)}</span><span>${hs.got[a.id]||'—'}</span></div>`).join('')}</div>`;
+  }
+  return `<div class="set"><button class="back" data-back>‹ ${parent}</button><h2 class="st">${title}</h2>${body}</div>`;
+}
+$('app').addEventListener('change',e=>{const d=e.target.dataset;if(d.hap){S.haptic=S.haptic||{};S.haptic[d.hap]=e.target.checked;save()}});
+document.addEventListener('click',e=>{if(e.target.closest('#dock button,#tt,#tm,#ty,.mi,.back'))buzz('nav')});
 applyLang();applyLook();formUI();drawDots();render();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
