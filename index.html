@@ -99,6 +99,9 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 .pal2{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:6px}.bgs{aspect-ratio:1;border-radius:50%;border:1px solid var(--line);padding:0}.bgs.on{outline:2px solid var(--ink);outline-offset:2px}
 .rst{background:var(--off);border:0;border-radius:10px;padding:10px;font-weight:600;color:var(--ink)}
+.mi{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:8px;text-align:left;color:var(--ink);font:inherit;font-size:16px}.mv{color:var(--mute);font-size:14px}
+.back{background:none;border:0;color:var(--acc);font:inherit;font-weight:600;padding:6px 0;text-align:left}.st{font-size:22px;margin:4px 0 12px}
+.cust{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;margin:6px 0}.cust input[type=color]{width:44px;height:32px;border:0;background:none;padding:0}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
@@ -262,6 +265,8 @@ $('app').addEventListener('click',e=>{
     if(t.classList.contains('sure')){S.habits=S.habits.filter(x=>x.id!==t.dataset.del);save();render()}
     else{t.classList.add('sure');t.textContent='Точно удалить?';setTimeout(()=>{t.classList.remove('sure');t.textContent='Удалить'},3000)}
   }
+  else if(t.dataset.sub){sub=t.dataset.sub;render()}
+  else if(t.hasAttribute('data-back')){sub=null;render()}
   else if(t.dataset.bg){S.look=S.look||{};S.look.bg=t.dataset.bg;applyLook();save();render()}
   else if(t.hasAttribute('data-reset')){S.look={};applyLook();save();render()}
   else if(t.id==='demo')demo();
@@ -394,8 +399,8 @@ addEventListener('pointerup',()=>{if(!dg)return;clearTimeout(dg.tm);const d=dg;d
   const b=d.b,k=kd(today),f=d.f,cnt=b.kind==='count'||b.kind==='timer',st=b.kind==='timer'?1:(b.step||1);
   change(b,today,()=>{if(f>=.85)b.days[k]=cnt?Math.max(b.goal,b.days[k]||0):1;else if(cnt&&f>.05)b.days[k]=Math.min(b.goal,Math.round(f*b.goal/st)*st)})});
 addEventListener('pointercancel',()=>{if(dg){clearTimeout(dg.tm);dg.t.classList.remove('drag');dg=null}});
-$('dock').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.pg;scrollTo(0,0);render()}};
-$('app').addEventListener('input',e=>{const p=e.target.dataset.p;if(p){S.prof=S.prof||{};S.prof[p]=e.target.value;save()}if(e.target.dataset.dock!==undefined){S.look=S.look||{};S.look.t=+e.target.value;$('dv').textContent=e.target.value;applyLook();save()}});
+$('dock').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.pg;sub=null;scrollTo(0,0);render()}};
+$('app').addEventListener('input',e=>{const d=e.target.dataset;if(d.p){S.prof=S.prof||{};S.prof[d.p]=e.target.value;save();if(d.p==='lang'){applyLang();render()}}if(d.dock!==undefined){S.look=S.look||{};S.look.t=+e.target.value;$('dv').textContent=e.target.value;applyLook();save()}if(d.cbg){S.look=S.look||{};S.look.bg=e.target.value;applyLook();save()}});
 const GB=['#f5f6f1','#ffffff','#fdf2f2','#fff4e6','#fff9db','#ebfbee','#e6fcf5','#e7f5ff','#f3f0ff','#fff0f6','#2b2d42','#12151c'];
 function dockT(){return S.look&&S.look.t!=null?S.look.t:18}
 function hx(c){const n=parseInt(c.slice(1),16);return[(n>>16)&255,(n>>8)&255,n&255]}
@@ -414,7 +419,127 @@ function applyLook(){
   }
   r.setProperty('--dock-a',String(100-dockT()));
 }
-applyLook();formUI();drawDots();render();
+let sub=null;
+const WE=['Mo','Tu','We','Th','Fr','Sa','Su'],ME=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WR=WD.slice(),MR=MONTHS.slice(),GR=GEN.slice(),GE=ME.map(m=>m.toLowerCase());
+const ACHEN={t1:'First perfect day',t10:'10 perfect days',t50:'50 perfect days',s3:'3 perfect days in a row',s7:'A week without misses',s14:'14 perfect days in a row',s30:'A month without misses'};
+const TX={
+ru:{tToday:'Сегодня',tMonth:'Месяц',tYear:'Год',add:'Добавить',color:'Цвет',del:'Удалить',kCheck:'Галочка',kCount:'Число',kTimer:'Таймер',kQuit:'Бросить',sDaily:'Каждый день',sDays:'По дням недели',sWeek:'Раз в неделю',cxGoal:'Цель в день',cxStep:'За одно нажатие',cxUnit:'Что считаем',ph:{check:'Новая привычка',count:'Что считаем',quit:'Что бросаем',timer:'Что делаем по таймеру'},ex:{check:['Спортзал','Зарядка по утрам','Прогулка','Растяжка'],count:['Стаканы воды','Страницы книги','Минуты чтения','Отжимания'],quit:['Без сладкого','Курение','Соцсети перед сном','Фастфуд'],timer:['Йога','Медитация','Чтение','Английский']},dy:'дн.',wk:'нед.',setT:'Настройки',profile:'Профиль',lang:'Язык',look:'Оформление',ach:'Ачивки',widgets:'Виджеты',name:'Имя или ник',email:'Почта',phone:'Телефон',profNote:'Пока сохраняется только на этом устройстве. Подтверждение почты и номера появится вместе с аккаунтом.',langRu:'Русский',langEn:'English',bgT:'Цвет фона',custom:'Свой цвет',trans:'Прозрачность панели',reset:'Сбросить оформление',widNote:'Виджеты появятся в следующих версиях.',achT:'История ачивок',food:'Питание',foodT:'Раздел с питанием появится через неделю.',ana:'Аналитика',anaT:'Аналитика питания появится здесь, когда раздел будет готов.',note:'Данные хранятся на этом устройстве. Синхронизация между телефоном и компьютером появится в полной версии.',mNone:'Сегодня привычек нет, отдыхайте',mAll:'Всё сделано. Отличный день!',mKeep:(n,c)=>`Не прерывайте серию «${n}»: ${c}`,mLeft:c=>`Осталось сделать: ${c}`,of:'из',slip:'Срыв отмечен',clean:c=>`${c} дн. без срывов · нажмите, если сорвались`,streak:'серия',record:'рекорд',monthPct:'за месяц',bestDay:'лучший день',daysOfYear:'дн. из года',weekTimes:'Раз в неделю:'},
+en:{tToday:'Today',tMonth:'Month',tYear:'Year',add:'Add',color:'Color',del:'Delete',kCheck:'Check',kCount:'Number',kTimer:'Timer',kQuit:'Quit',sDaily:'Every day',sDays:'Certain weekdays',sWeek:'X times a week',cxGoal:'Daily goal',cxStep:'Per tap',cxUnit:'Unit',ph:{check:'New habit',count:'What to count',quit:'What to quit',timer:'What to time'},ex:{check:['Gym','Morning stretch','Walk','Stretching'],count:['Glasses of water','Pages read','Minutes of reading','Push-ups'],quit:['Sweets','Smoking','Social media before bed','Fast food'],timer:['Yoga','Meditation','Reading','English']},dy:'days',wk:'weeks',setT:'Settings',profile:'Profile',lang:'Language',look:'Appearance',ach:'Achievements',widgets:'Widgets',name:'Name or nickname',email:'Email',phone:'Phone',profNote:'Saved on this device only for now. Email and phone verification will come with accounts.',langRu:'Русский',langEn:'English',bgT:'Background color',custom:'Custom color',trans:'Dock transparency',reset:'Reset appearance',widNote:'Widgets will arrive in later versions.',achT:'Achievements history',food:'Nutrition',foodT:'The nutrition section arrives in a week.',ana:'Analytics',anaT:'Nutrition analytics will appear here once the section is ready.',note:'Data is stored on this device. Sync between phone and computer will come in the full version.',mNone:'No habits today, rest up',mAll:'All done. Great day!',mKeep:(n,c)=>`Keep the streak of "${n}": ${c}`,mLeft:c=>`Left to do: ${c}`,of:'of',slip:'Slip marked',clean:c=>`${c} days clean · tap if you slipped`,streak:'streak',record:'record',monthPct:'this month',bestDay:'best day',daysOfYear:'days this year',weekTimes:'Times a week:'}};
+function lang(){return S.prof&&S.prof.lang==='en'?'en':'ru'}
+function achName(a){return lang()==='en'?ACHEN[a.id]:a.t}
+function unitOf(h){const T=TX[lang()];return h.sch==='week'?T.wk:T.dy}
+function dockT(){return S.look&&S.look.t!=null?S.look.t:18}
+function applyLang(){
+  const L=lang(),T=TX[L];
+  WD.forEach((_,i)=>WD[i]=(L==='en'?WE:WR)[i]);
+  MONTHS.forEach((_,i)=>MONTHS[i]=(L==='en'?ME:MR)[i]);
+  GEN.forEach((_,i)=>GEN[i]=(L==='en'?GE:GR)[i]);
+  document.documentElement.lang=L;
+  $('tt').textContent=T.tToday;$('tm').textContent=T.tMonth;$('ty').textContent=T.tYear;
+  [...document.querySelectorAll('#kind option')].forEach((o,i)=>o.textContent=[T.kCheck,T.kCount,T.kTimer,T.kQuit][i]);
+  [...document.querySelectorAll('#sch option')].forEach((o,i)=>o.textContent=[T.sDaily,T.sDays,T.sWeek][i]);
+  [...document.querySelectorAll('#cx label')].forEach((l,i)=>l.firstChild.textContent=[T.cxGoal,T.cxStep,T.cxUnit][i]);
+  document.querySelector('.note').textContent=T.note;
+  formUI();
+}
+function hx(c){const n=parseInt(c.slice(1),16);return[(n>>16)&255,(n>>8)&255,n&255]}
+function mix(a,b,p){const A=hx(a),B=hx(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*p).toString(16).padStart(2,'0')).join('')}
+function applyLook(){
+  const r=document.documentElement.style,bg=(S.look||{}).bg;
+  if(!bg){['--bg','--ink','--mute','--card','--line','--grid','--off'].forEach(v=>r.removeProperty(v))}
+  else{const[a,b,c]=hx(bg),lt=(0.299*a+0.587*b+0.114*c)/255>.55;
+    r.setProperty('--bg',bg);
+    r.setProperty('--ink',lt?'#1d2740':'#e7ebf5');
+    r.setProperty('--mute',lt?'#667189':'#93a0ba');
+    r.setProperty('--card',lt?mix(bg,'#ffffff',.55):mix(bg,'#ffffff',.08));
+    r.setProperty('--line',lt?mix(bg,'#000000',.14):mix(bg,'#ffffff',.18));
+    r.setProperty('--grid',lt?mix(bg,'#000000',.06):mix(bg,'#ffffff',.06));
+    r.setProperty('--off',lt?mix(bg,'#000000',.07):mix(bg,'#ffffff',.1));
+  }
+  r.setProperty('--dock-a',String(100-dockT()));
+}
+function formUI(){
+  const T=TX[lang()],k=$('kind').value,s=$('sch').value,dx=$('dx'),ex=T.ex[k],e=ex[Math.floor(Math.random()*ex.length)];
+  $('nm').placeholder=lang()==='en'?`${T.ph[k]}, e.g. "${e}"`:`${T.ph[k]}, например «${e}»`;
+  $('sch').hidden=k==='quit';$('cx').hidden=k!=='count'&&k!=='timer';[...$('cx').children].slice(1).forEach(x=>x.hidden=k==='timer');
+  dx.hidden=k==='quit'||s==='daily';
+  if(s==='days')dx.innerHTML=WD.map((w,i)=>`<button class="chip${form.d.includes(i)?' on':''}" data-wd="${i}">${w}</button>`).join('');
+  else if(s==='week')dx.innerHTML=`<span>${T.weekTimes}</span>`+[1,2,3,4,5,6].map(n=>`<button class="chip${form.n===n?' on':''}" data-wn="${n}">${n}</button>`).join('');
+}
+function drawDots(){
+  const T=TX[lang()];
+  $('cl').innerHTML=`<button class="sw" id="sw" style="--c:${pc}" aria-label="${T.color}"><i></i>${T.color}</button><button class="go" id="go">${T.add}</button>`;
+}
+function chrome(){
+  requestAnimationFrame(moveDock);
+  const h=page==='habits',T=TX[lang()];
+  document.querySelector('.tabs').hidden=!h;$('addbox').hidden=!h;
+  document.querySelectorAll('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.pg===page));
+  if(!h){const c=page==='cal';$('pv').hidden=$('nx').hidden=!c;$('lb').textContent=c?MONTHS[cur.getMonth()]+' '+cur.getFullYear():({food:T.food,ana:T.ana,set:T.setT})[page]}
+}
+function win(bf){fireworks();const g=history().got,nw=ACH.filter(a=>g[a.id]&&!bf[a.id]);if(nw.length)toast('🏆 '+achName(nw[0]))}
+function todayView(){
+  const T=TX[lang()],k=kd(today),L=S.habits.filter(h=>due(h,today)),dn=L.filter(h=>done(h,today)).length,tot=L.length,p=tot?dn/tot:0,R=44,C=2*Math.PI*R;
+  let msg=T.mNone;
+  if(tot&&dn===tot)msg=T.mAll;
+  else if(tot){const r=L.filter(h=>!done(h,today)).map(h=>({h,s:streaks(h)})).sort((a,b)=>b.s.c-a.s.c)[0];msg=r.s.c>=3?T.mKeep(r.h.name,r.s.c+' '+unitOf(r.h)):T.mLeft(tot-dn)}
+  const tiles=L.map(b=>{const s=streaks(b),v=b.days[k]||0,on=done(b,today);
+    const sub=b.kind==='timer'?tsub(b):b.kind==='count'?`${v} ${T.of} ${b.goal} ${esc(b.unit||'')}`:b.kind==='quit'?(v?T.slip:T.clean(s.c)):`${T.streak}: ${s.c} ${unitOf(b)}`;
+    const bar=(b.kind==='count'||b.kind==='timer')?`<i class="bar"><u style="width:${Math.min(100,(b.kind==='timer'?live(b):v)/b.goal*100)}%"></u></i>`:'';
+    return `<button class="tile${on?' on':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${on?'✓':b.kind==='timer'?(TM[b.id]?'⏸':'▶'):''}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>`}).join('');
+  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="tiles">${tiles}</div>`;
+}
+function monthView(){
+  const T=TX[lang()],y=cur.getFullYear(),m=cur.getMonth(),dim=new Date(y,m+1,0).getDate();
+  let h='<div class="scroll" id="sc"><table><thead><tr><th class="nm"></th>';
+  for(let d=1;d<=dim;d++){const dt=new Date(y,m,d),w=wdi(dt);h+=`<th class="${+dt===+today?'td':''}${w>4?' we':''}">${d}<small>${WD[w]}</small></th>`}
+  h+='</tr></thead><tbody>';
+  for(const b of S.habits){
+    h+=`<tr><th class="nm"><i style="background:${b.color}"></i>${esc(b.name)}</th>`;
+    for(let d=1;d<=dim;d++){const dt=new Date(y,m,d),k=key(y,m,d),q=b.kind==='quit',v=b.days[k],on=done(b,dt),dis=dt>today||(q&&dt<new Date(b.start+'T00:00:00'));
+      h+=`<td><button class="c${on?' on':''}${due(b,dt)?'':' rest'}${q&&v?' slip':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}" aria-pressed="${on}" aria-label="${esc(b.name)}, ${pad(d)}.${pad(m+1)}"${dis?' disabled':''}>${b.kind==='count'&&v?v:''}${q&&v?'×':''}</button></td>`}
+    h+='</tr>';
+  }
+  h+='</tbody></table></div><div class="stats">';
+  for(const b of S.habits){const s=streaks(b);
+    h+=`<div class="card"><h2><i style="background:${b.color}"></i>${esc(b.name)}<button data-del="${b.id}">${T.del}</button></h2><div class="kv"><div><b>${s.c}</b><span>${T.streak}, ${unitOf(b)}</span></div><div><b>${s.best}</b><span>${T.record}</span></div><div><b>${pct(b)}%</b><span>${T.monthPct}</span></div><div><b>${bestWd(b)}</b><span>${T.bestDay}</span></div></div></div>`}
+  return h+'</div>';
+}
+function yearView(){
+  const T=TX[lang()],y=cur.getFullYear(),b=S.habits.find(x=>x.id===sel)||S.habits[0];
+  sel=b.id;
+  const chips='<div class="chips">'+S.habits.map(x=>`<button class="chip${x.id===sel?' on':''}" data-s="${x.id}">${esc(x.name)}</button>`).join('')+'</div>';
+  const off=wdi(new Date(y,0,1)),days=((y%4==0&&y%100!=0)||y%400==0)?366:365;
+  let cells='',total=0;
+  for(let i=0;i<off;i++)cells+='<b class="e"></b>';
+  for(let i=0;i<days;i++){const dt=new Date(y,0,1+i),on=done(b,dt);if(on)total++;cells+=`<b class="${on?'on':''}${dt>today?' f':''}" style="--c:${b.color}" title="${kd(dt)}"></b>`}
+  return chips+`<div class="card"><div class="yt"><b>${total}</b>${T.daysOfYear}</div><div class="scroll" id="sc"><div class="heat">${cells}</div></div></div>`;
+}
+function setView(){
+  const P=S.prof||{},hs=history(),T=TX[lang()],L=lang();
+  if(!sub){
+    const rows=[['profile',T.profile,P.name||''],['lang',T.lang,L==='en'?T.langEn:T.langRu],['look',T.look,''],['ach',T.ach,''],['widgets',T.widgets,'']];
+    return '<div class="set"><div class="card"><h2>'+T.setT+'</h2></div>'+rows.map(([k,n,v])=>`<button class="mi" data-sub="${k}"><span>${n}</span><span class="mv">${esc(v)} ›</span></button>`).join('')+'</div>';
+  }
+  const titles={profile:T.profile,lang:T.lang,look:T.look,ach:T.ach,widgets:T.widgets};
+  const back=`<button class="back" data-back>‹ ${T.setT}</button><h2 class="st">${titles[sub]}</h2>`;
+  let body='';
+  if(sub==='profile')body=`<div class="card"><div class="set"><label>${T.name}<input data-p="name" maxlength="30" value="${esc(P.name||'')}"></label><label>${T.email}<input data-p="email" type="email" placeholder="name@mail.ru" value="${esc(P.email||'')}"></label><label>${T.phone}<input data-p="phone" type="tel" placeholder="+7 ___ ___-__-__" value="${esc(P.phone||'')}"></label></div><p class="note" style="text-align:left">${T.profNote}</p></div>`;
+  else if(sub==='lang')body=`<div class="card"><select data-p="lang"><option value="ru"${L==='en'?'':' selected'}>${T.langRu}</option><option value="en"${L==='en'?' selected':''}>${T.langEn}</option></select></div>`;
+  else if(sub==='look'){const bg=(S.look||{}).bg,t=dockT();body=`<div class="card"><h2>${T.bgT}</h2><div class="pg">${GS.map(c=>`<button class="${c===bg?'on':''}" style="--c:${c}" data-bg="${c}" aria-label="${c}"></button>`).join('')}</div><label class="cust">${T.custom}<input type="color" data-cbg value="${bg||'#f5f6f1'}"></label></div><div class="card"><label class="cust">${T.trans}: <b id="dv">${t}</b>%<input type="range" min="0" max="100" value="${t}" data-dock></label></div><button class="rst" data-reset>${T.reset}</button>`}
+  else if(sub==='ach')body=`<div class="card"><h2>${T.achT}</h2>${ACH.map(a=>`<div class="ac${hs.got[a.id]?'':' lock'}"><span>${hs.got[a.id]?'🏆':'🔒'} ${achName(a)}</span><span>${hs.got[a.id]||'—'}</span></div>`).join('')}</div>`;
+  else body=`<div class="card"><p class="note" style="text-align:left">${T.widNote}</p></div>`;
+  return `<div class="set">${back}${body}</div>`;
+}
+function pageView(){
+  const T=TX[lang()];
+  if(page==='cal')return calView();
+  if(page==='food')return soon('🥗',T.food,T.foodT);
+  if(page==='ana')return soon('📊',T.ana,T.anaT);
+  return setView();
+}
+applyLang();applyLook();formUI();drawDots();render();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </body>
