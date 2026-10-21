@@ -133,6 +133,11 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .mlabs{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;font-size:9px;color:var(--mute);text-align:center}
 .dayinfo{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;opacity:.6;margin-bottom:8px}.dayinfo span{display:inline-flex;align-items:center;gap:6px}.dayinfo i{width:10px;height:10px;border-radius:3px;display:inline-block}
 .mcard{height:173px;box-sizing:border-box;border-radius:28px;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;margin:12px 0 4px;background:#f4b862;box-shadow:0 8px 24px rgba(0,0,0,.14)}.mcard .mface{height:92px;width:auto;display:block;margin:0 auto}.mcard .mlab{font-size:30px;margin:6px 0 0;line-height:1;text-align:center}
+.cust input[type=range]{flex:1;min-width:0;margin:0 -13px;height:30px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;touch-action:none}
+.cust input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--off)}
+.cust input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:0;box-shadow:0 2px 8px rgba(0,0,0,.3);margin-top:-10px}
+.cust input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--off)}
+.cust input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:0;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .gpop textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;background:transparent;color:var(--ink);font:inherit;padding:10px;box-sizing:border-box;resize:vertical}
 .mcard{border-radius:28px;padding:20px 12px 10px;margin-bottom:12px;overflow:hidden;background:#f4b862}.mface{width:min(74%,280px);display:block;margin:0 auto}
 .mlab{text-align:center;font-weight:900;font-size:42px;letter-spacing:.02em;text-transform:uppercase;line-height:1.1;margin:0 0 16px}.mlab.pop{animation:mpop .32s cubic-bezier(.34,1.56,.64,1)}@keyframes mpop{from{transform:scale(.86);opacity:.35}to{transform:none;opacity:1}}
