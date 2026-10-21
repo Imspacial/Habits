@@ -124,6 +124,18 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .mtr{position:relative;height:56px;margin:0 22px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}.mtr .line{position:absolute;left:0;right:0;top:26px;height:4px;border-radius:2px;background:rgba(0,0,0,.2)}.mtr .st{position:absolute;top:24px;width:8px;height:8px;border-radius:50%;background:rgba(0,0,0,.3);transform:translateX(-50%)}
 .mth{position:absolute;left:0;top:6px;width:46px;height:46px;margin-left:-23px;border-radius:50%;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.28);display:grid;place-items:center;will-change:transform}.mth svg{width:36px;height:27px}
 .mnames{display:flex;justify-content:space-between;margin:0 14px 6px;font-size:12px;color:rgba(0,0,0,.55)}
+.tw{position:relative}.tw .tile{transition:transform .25s cubic-bezier(.34,1.3,.5,1),background .2s}
+@keyframes jig{0%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}100%{transform:rotate(-1deg)}}
+.tw.jig .tile{animation:jig .26s ease-in-out infinite}.tw.jig:nth-child(even) .tile{animation-duration:.31s;animation-direction:reverse}.tw.jig:nth-child(3n) .tile{animation-delay:-.12s}
+.tw.sel{overflow:hidden;border-radius:16px}.tw.sel .tile{animation:none;transform:translateX(-64px)}
+.xbtn{position:absolute;right:0;top:0;bottom:0;width:60px;border:0;border-radius:16px;background:#e03131;color:#fff;font-size:22px;opacity:0;pointer-events:none;transition:opacity .2s}.tw.sel .xbtn{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.tw.jig .tile{animation:none}}
+.pal.mid{align-items:center;padding:20px}.dlg{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}.dlg p{margin:0 0 16px;line-height:1.4}.dbtn{display:flex;gap:10px}.dbtn button{flex:1;border:1px solid var(--line);background:var(--off);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-weight:600}.dbtn .danger{background:#e03131;border-color:#e03131;color:#fff}
+.tw .tile{transition:transform .25s cubic-bezier(.34,1.3,.5,1),width .25s ease,background .2s}
+.tw.ed .tile{width:calc(100% - 34px)}
+.hnd{position:absolute;right:2px;top:50%;width:28px;height:40px;margin-top:-20px;display:grid;place-items:center;color:var(--mute);touch-action:none;cursor:grab;animation:hin .3s ease both}.hnd svg{width:20px;height:6px;fill:currentColor}
+@keyframes hin{from{opacity:0}to{opacity:1}}
+.tw.lift{position:relative;z-index:5}.tw.lift .tile{box-shadow:0 10px 26px rgba(0,0,0,.28);transform:scale(1.03)!important;animation:none}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
@@ -136,6 +148,7 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 </header>
 <main id="app"></main>
 <div id="pal" class="pal" hidden><div class="sheet"><div class="sh">Выберите цвет</div><div class="pg" id="pg"></div></div></div>
+<div id="cfm" class="pal mid" hidden><div class="dlg"><p id="cfmt"></p><div class="dbtn"><button data-cfm="no" id="cfn"></button><button data-cfm="yes" id="cfy" class="danger"></button></div></div></div>
 <div id="ipk" class="pal" hidden><div class="sheet"><div class="sh" id="ish"></div><div class="ig" id="ig"></div></div></div>
 <nav class="dock" id="dock" aria-label="Разделы"><i class="pill"></i><button data-pg="habits" class="on" aria-label="Привычки"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg></button><button data-pg="cal" aria-label="Календарь"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button data-pg="mood" aria-label="Настроение"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14c.8 1.2 2 2 3.5 2s2.7-.8 3.5-2M9 9.5h.01M15 9.5h.01"/></svg></button><button data-pg="food" aria-label="Питание"><svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 002 2v8M11 3v8a2 2 0 01-2 2M17 21V3c-2.5 1.5-3 5-3 8h3"/></svg></button><button data-pg="ana" aria-label="Аналитика"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></button><button data-pg="set" aria-label="Личное пространство"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.6-4 3.6-6.5 7.5-6.5s6.9 2.5 7.5 6.5"/></svg></button></nav>
 <canvas id="fx"></canvas><div class="toast" id="toast" hidden></div>
@@ -243,7 +256,7 @@ function yearView(){
 }
 function render(){
   chrome();
-  if(page!=='habits'){$('app').innerHTML=pageView();if(page==='mood')initMood();return}
+  if(page!=='habits'){delMode=false;delSel=null;$('app').innerHTML=pageView();if(page==='mood')initMood();return}
   $('lb').textContent=view==='today'?WD[wdi(today)]+', '+today.getDate()+' '+GEN[today.getMonth()]:view==='month'?MONTHS[cur.getMonth()]+' '+cur.getFullYear():String(cur.getFullYear());
   $('pv').hidden=$('nx').hidden=view==='today';
   $('tt').classList.toggle('on',view==='today');$('tm').classList.toggle('on',view==='month');$('ty').classList.toggle('on',view==='year');
@@ -288,9 +301,12 @@ $('app').addEventListener('click',e=>{
   if(t.hasAttribute('data-dback')){page='habits';render();return}
   if(t.dataset.dedit){editId=t.dataset.dedit;page='edit';render();return}
   if(t.dataset.adj){adj(S.habits.find(x=>x.id===detId),t.dataset.adj);return}
+  if(t.dataset.h&&delMode&&view==='today'){delSel=delSel===t.dataset.h?null:t.dataset.h;render();return}
   if(t.dataset.h&&view==='today'&&!editMode&&e.target.closest('.tt')){detId=t.dataset.h;detDate=kd(today);detTab='memo';page='det';render();return}
-  if(t.dataset.h&&editMode&&view==='today'){editId=t.dataset.h;page='edit';render();return}
-  if(t.hasAttribute('data-edtoggle')){editMode=!editMode;render();return}
+  if(t.dataset.h&&editMode&&view==='today'){if(Date.now()-sw<400)return;editId=t.dataset.h;page='edit';render();return}
+  if(t.hasAttribute('data-edtoggle')){editMode=!editMode;if(editMode){delMode=false;delSel=null}render();if(editMode){document.querySelectorAll('.tw.ed').forEach(x=>x.classList.remove('ed'));requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.tw').forEach(x=>x.classList.add('ed'))))}return}
+  if(t.hasAttribute('data-deltoggle')){delMode=!delMode;delSel=null;if(delMode)editMode=false;render();return}
+  if(t.dataset.xdel){askDel(t.dataset.xdel);return}
   if(t.hasAttribute('data-ed-back')){page='habits';editId=null;render();return}
   if(t.dataset.hcol){const b=S.habits.find(x=>x.id===t.dataset.hcol);if(b){b.color=t.dataset.c;save();render()}return}
   if(t.dataset.hic!==undefined){const b=S.habits.find(x=>x.id===t.dataset.hic);if(b){b.icon=t.dataset.k||null;save();render()}return}
@@ -429,7 +445,7 @@ function stopT(b){const k=kd(today),el=(Date.now()-TM[b.id])/60000;delete TM[b.i
 setInterval(()=>{for(const id in TM){const b=S.habits.find(x=>x.id===id);if(!b){delete TM[id];continue}
   if(live(b)>=b.goal){stopT(b);continue}
   const t=document.querySelector(`.tile[data-h="${id}"]`);if(t){t.querySelector('small').textContent=tsub(b);const u=t.querySelector('.bar u');if(u)u.style.width=Math.min(100,live(b)/b.goal*100)+'%'}}},1000);
-$('app').addEventListener('pointerdown',e=>{const t=e.target.closest('.tile');if(!t)return;if(editMode&&view==='today')return;const b=S.habits.find(x=>x.id===t.dataset.h);if(!b||b.kind==='quit')return;
+$('app').addEventListener('pointerdown',e=>{const t=e.target.closest('.tile');if(!t)return;if((editMode||delMode)&&view==='today')return;const b=S.habits.find(x=>x.id===t.dataset.h);if(!b||b.kind==='quit')return;
   dg={t,b,x:e.clientX,y:e.clientY,on:false,f:0,tm:setTimeout(()=>{if(dg){dg.on=true;t.classList.add('drag');navigator.vibrate&&navigator.vibrate(12)}},260)}});
 addEventListener('pointermove',e=>{if(!dg)return;
   if(!dg.on){const dx=e.clientX-dg.x,dy=e.clientY-dg.y;if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)){clearTimeout(dg.tm);dg.on=true;dg.t.classList.add('drag')}else if(Math.abs(dy)>10){clearTimeout(dg.tm);dg=null}return}
@@ -785,10 +801,10 @@ function todayView(){
   else if(tot){const r=L.filter(h=>!done(h,today)).map(h=>({h,s:streaks(h)})).sort((a,b)=>b.s.c-a.s.c)[0];msg=r.s.c>=3?T.mKeep(r.h.name,r.s.c+' '+unitOf(r.h)):T.mLeft(tot-dn)}
   const tiles=L.map(b=>{const s=streaks(b),v=b.days[k]||0,on=done(b,today);
     const sub=b.kind==='timer'?tsub(b):b.kind==='count'?`${v} ${T.of} ${b.goal} ${esc(b.unit||'')}`:b.kind==='quit'?(v?T.slip:T.clean(s.c)):`${T.streak}: ${s.c} ${unitOf(b)}`;
-    const bar=(b.kind==='count'||b.kind==='timer')?`<i class="bar"><u style="width:${Math.min(100,(b.kind==='timer'?live(b):v)/b.goal*100)}%"></u></i>`:'';
+    const bar=multi(b)?`<i class="bar"><u style="width:${Math.min(100,(b.kind==='timer'?live(b):v)/b.goal*100)}%"></u></i>`:'';
     const mark=editMode?PENCIL:on?'✓':b.kind==='timer'?(TM[b.id]?'⏸':'▶'):(b.icon?icoSvg(b.icon):'');
-    return `<button class="tile${on?' on':''}${editMode?' ed':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${mark}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>`}).join('');
-  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="row" style="justify-content:flex-end;margin:0 0 8px"><button class="chip" data-edtoggle>${editMode?E.done:E.edit}</button></div><div class="tiles">${tiles}</div>`;
+    return `<div class="tw${delMode?' jig':''}${delSel===b.id?' sel':''}${editMode?' ed':''}" data-w="${b.id}"><button class="tile${on?' on':''}${editMode?' ed':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${mark}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>${delMode?`<button class="xbtn" data-xdel="${b.id}" aria-label="${TD[lang()].del}">✕</button>`:''}${editMode?HND:''}</div>`}).join('');
+  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="row" style="justify-content:flex-end;margin:0 0 8px"><button class="chip" data-edtoggle>${editMode?E.done:E.edit}</button><button class="chip" data-deltoggle>${delMode?E.done:TD[lang()].del}</button></div><div class="tiles">${tiles}</div>`;
 }
 let detId=null,detDate=kd(today),detTab='memo';
 const TM2={ru:{title:'Настроение',morn:'Утро',eve:'Вечер',legend:'Цвет дня (верх — утро, низ — вечер)',sum:'За месяц'},en:{title:'Mood',morn:'Morning',eve:'Evening',legend:'Day colour (top — morning, bottom — evening)',sum:'This month'}};
@@ -829,7 +845,7 @@ function adj(b,a){
   change(b,new Date(detDate+'T00:00:00'),()=>{
     const v=b.days[detDate]||0;
     if(b.kind==='count'||b.kind==='timer'){
-      const nv=a==='max'?b.goal:a==='toggle'?v:Math.max(0,Math.min(b.goal,v+(+a)*(b.step||1)));
+      const nv=a==='max'?b.goal:a==='toggle'?(v>=b.goal?0:b.goal):Math.max(0,Math.min(b.goal,v+(+a)*(b.step||1)));
       if(nv<=0)delete b.days[detDate];else b.days[detDate]=nv;
     }else{if(v)delete b.days[detDate];else b.days[detDate]=1}
   });
@@ -842,14 +858,14 @@ function detView(){
   const R=54,C=2*Math.PI*R,p=count?Math.min(1,v/b.goal):(dn?1:0);
   const big=count?fmt(v):(dn?'✓':'—');
   const sub=count?(isEn?'of ':'из ')+fmt(b.goal):(b.kind==='quit'?(dn?T.clean(streaks(b).c):T.slip):'');
-  const ctl=count?`<div class="dctl"><button data-adj="-1">−</button><button class="go" data-adj="+1">${E.add||T.add}</button><button data-adj="max">✓</button></div>`:b.kind==='quit'?`<div class="dctl"><button class="go" data-adj="toggle">${dn?(isEn?'Log a slip':'Отметить срыв'):(isEn?'Undo slip':'Снять срыв')}</button></div>`:`<div class="dctl"><button class="big${dn?' on':''}" data-adj="toggle">✓</button></div>`;
+  const ctl=count&&multi(b)?`<div class="dctl"><button data-adj="-1">−</button><button class="go" data-adj="+1">${E.add||T.add}</button><button data-adj="max">✓</button></div>`:b.kind==='quit'?`<div class="dctl"><button class="go" data-adj="toggle">${dn?(isEn?'Log a slip':'Отметить срыв'):(isEn?'Undo slip':'Снять срыв')}</button></div>`:`<div class="dctl"><button class="big${dn?' on':''}" data-adj="toggle">✓</button></div>`;
   const label=isT&&detDate===kd(today)?(isEn?'Today':'Сегодня'):dt.toLocaleDateString(isEn?'en-GB':'ru-RU',{weekday:'short',day:'numeric',month:'long'});
-  const ring=`<div class="dring"><svg viewBox="0 0 140 140" width="180" height="180"><circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--off)" stroke-width="12"/><circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--acc)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 70 70)"/><text x="70" y="74" text-anchor="middle" font-size="20" font-weight="800" fill="currentColor">${esc(big)}</text><text x="70" y="94" text-anchor="middle" font-size="10" fill="var(--mute)">${esc(sub)}</text></svg></div>`;
+  const ring=!multi(b)?'':`<div class="dring"><svg viewBox="0 0 140 140" width="180" height="180"><circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--off)" stroke-width="12"/><circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--acc)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 70 70)"/><text x="70" y="74" text-anchor="middle" font-size="20" font-weight="800" fill="currentColor">${esc(big)}</text><text x="70" y="94" text-anchor="middle" font-size="10" fill="var(--mute)">${esc(sub)}</text></svg></div>`;
   const seg=`<div class="seg"><button data-dtab="memo" class="${detTab==='memo'?'on':''}">${isEn?'Note':'Памятка'}</button><button data-dtab="stat" class="${detTab==='stat'?'on':''}">${isEn?'Stats':'Стат'}</button></div>`;
   let body;
   if(detTab==='memo')body=`<textarea class="memo" data-memo="${b.id}" data-date="${detDate}" placeholder="${isEn?'Notes for this day':'Заметки за этот день'}">${esc((b.notes||{})[detDate]||'')}</textarea>`;
   else{const s=streaks(b);body=`<div class="card"><div class="kv"><div><b>${s.c}</b><span>${T.streak}</span></div><div><b>${s.best}</b><span>${T.record}</span></div><div><b>${pct(b)}%</b><span>${T.monthPct}</span></div><div><b>${bestWd(b)}</b><span>${T.bestDay}</span></div></div></div>`}
-  return `<div class="dtop"><button class="back" data-dback>‹ ${T.tToday}</button><button class="chip" data-dedit="${b.id}">⋯</button></div><div class="dnav"><button data-dd="-1">‹</button><span>${label}</span><button data-dd="1"${isT?' disabled':''}>›</button></div>${ring}${ctl}${seg}${body}`;
+  return `<div class="dtop"><button class="back" data-dback>‹ ${T.tToday}</button><button class="chip" data-dedit="${b.id}">⋯</button></div><div class="dnav"><button data-dd="-1">‹</button><span>${label}</span><button data-dd="1"${isT?' disabled':''}>›</button></div>${ring}${ctl}${!multi(b)&&b.kind==='quit'?`<p class="note">${esc(sub)}</p>`:''}${seg}${body}`;
 }
 function moodCal(){
   const L=TM2[lang()],dk=kd(today),c0=(S.mood||{})[dk]||{},md=S.mood||{};
@@ -1004,7 +1020,65 @@ function liveTxt(d){
   else sm.textContent=v+' '+T.of+' '+b.goal+' '+(b.unit||'');
   if(u)u.style.width=Math.min(100,v/b.goal*100)+'%';
 }
-$('app').addEventListener('touchmove',e=>{if(dg&&dg.on)e.preventDefault()},{passive:false});
+$('app').addEventListener('touchmove',e=>{if((dg&&dg.on)||(rd&&rd.on))e.preventDefault()},{passive:false});
+let delMode=false,delSel=null,delTarget=null;
+const TD={ru:{del:'Удалить',cancel:'Отмена',ask:n=>`Вы уверены, что хотите удалить трекер «${n}»? История и памятки по нему тоже будут удалены.`},en:{del:'Delete',cancel:'Cancel',ask:n=>`Are you sure you want to delete "${n}"? Its history and notes will be deleted too.`}};
+function multi(b){return(b.kind==='count'||b.kind==='timer')&&(b.kind==='timer'?b.goal*60:b.goal)>=2}
+function askDel(id){const b=S.habits.find(x=>x.id===id);if(!b)return;delTarget=id;const T=TD[lang()];$('cfmt').textContent=T.ask(b.name);$('cfy').textContent=T.del;$('cfn').textContent=T.cancel;$('cfm').hidden=false}
+$('cfm').addEventListener('click',e=>{
+  const b=e.target.closest('button');
+  if(b&&b.dataset.cfm==='yes'&&delTarget){S.habits=S.habits.filter(x=>x.id!==delTarget);delSel=null;if(!S.habits.length)delMode=false;save();buzz('done')}
+  if(b||e.target.id==='cfm'){$('cfm').hidden=true;delTarget=null;render()}
+});
+let rd=null;
+const HND='<span class="hnd" aria-hidden="true"><svg viewBox="0 0 24 6"><circle cx="3" cy="3" r="2.4"/><circle cx="12" cy="3" r="2.4"/><circle cx="21" cy="3" r="2.4"/></svg></span>';
+const rdSibs=()=>[...document.querySelectorAll('.tiles>.tw')];
+$('app').addEventListener('pointerdown',e=>{
+  if(!editMode||view!=='today'||page!=='habits')return;
+  const w=e.target.closest('.tw');if(!w||!w.parentNode.classList.contains('tiles'))return;
+  const hd=!!e.target.closest('.hnd');
+  rd={w,x:e.clientX,y:e.clientY,on:false,dy:0,grab:0,h:0,tm:setTimeout(startRd,hd?60:260)};
+});
+function startRd(){
+  if(!rd)return;
+  const r=rd.w.getBoundingClientRect();rd.on=true;rd.grab=rd.y-r.top;rd.h=r.height;
+  rd.w.classList.add('lift');buzz('prog');
+}
+function rdFollow(){
+  const w=rd.w;w.style.transition='none';w.style.transform='none';
+  const lt=w.getBoundingClientRect().top;
+  rd.dy=rd.y-rd.grab-lt;w.style.transform='translateY('+rd.dy+'px)';
+}
+function rdSwap(){
+  const w=rd.w,sibs=rdSibs(),i=sibs.indexOf(w),c=rd.y-rd.grab+rd.h/2;
+  let j=i;
+  if(i>0){const r=sibs[i-1].getBoundingClientRect();if(c<r.top+r.height/2)j=i-1}
+  if(j===i&&i<sibs.length-1){const r=sibs[i+1].getBoundingClientRect();if(c>r.top+r.height/2)j=i+1}
+  if(j===i)return;
+  const pre=new Map(sibs.filter(s=>s!==w).map(s=>[s,s.getBoundingClientRect().top]));
+  if(j<i)sibs[j].before(w);else sibs[j].after(w);
+  pre.forEach((top,s)=>{s.style.transition='none';s.style.transform='none';const d=top-s.getBoundingClientRect().top;if(d)s.style.transform='translateY('+d+'px)'});
+  void document.body.offsetHeight;
+  pre.forEach((_,s)=>{s.style.transition='transform .2s ease';s.style.transform='none'});
+  rdFollow();buzz('prog');
+}
+addEventListener('pointermove',e=>{
+  if(!rd)return;
+  if(!rd.on){if(Math.abs(e.clientX-rd.x)>8||Math.abs(e.clientY-rd.y)>8){clearTimeout(rd.tm);rd=null}return}
+  rd.y=e.clientY;rdFollow();rdSwap();
+});
+function rdEnd(){
+  if(!rd)return;
+  clearTimeout(rd.tm);const d=rd;rd=null;
+  if(!d.on)return;
+  sw=Date.now();
+  const ids=rdSibs().map(x=>x.dataset.w),by=Object.fromEntries(S.habits.map(h=>[h.id,h])),shown=new Set(ids);
+  let n=0;S.habits=S.habits.map(h=>shown.has(h.id)?by[ids[n++]]:h);
+  save();
+  d.w.style.transition='transform .2s ease';d.w.style.transform='none';d.w.classList.remove('lift');
+  setTimeout(render,210);
+}
+addEventListener('pointerup',rdEnd);addEventListener('pointercancel',rdEnd);
 applyLang();applyLook();formUI();drawDots();render();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
