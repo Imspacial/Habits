@@ -107,7 +107,9 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .isw{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0;font-size:20px;flex:none}.isw svg{width:22px;height:22px}
 .ig{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;max-height:55vh;overflow-y:auto;padding:4px;box-sizing:border-box}.ig button{aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:8px;min-width:0}.ig button.on{outline:2px solid var(--acc);outline-offset:-2px}.ig svg{width:100%;height:100%}.mk svg{width:20px;height:20px}
 .isw{width:auto;min-width:40px;padding:0 8px}
-#go{background:var(--card);color:var(--ink);border:1px solid var(--line)}.trio{display:flex;gap:4px}.isw .trio svg{width:13px;height:13px}
+#go{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.ib2{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0}.ib2.on{background:var(--acc);color:#fff;border-color:var(--acc)}.ib2 svg{width:20px;height:20px}
+.ttl{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0;text-align:left}.trio{display:flex;gap:4px}.isw .trio svg{width:13px;height:13px}
 .tile.ed{outline:2px dashed var(--acc);outline-offset:-2px}
 .cd{position:relative}.dm{width:6px;height:6px;border-radius:50%;position:absolute;bottom:4px;left:50%;transform:translateX(-50%)}
 .mrow{display:flex;justify-content:space-between;gap:4px;margin-bottom:6px}.mo{width:46px;height:46px;border:0;background:none;padding:0;border-radius:50%}.mo.on{outline:2px solid var(--ink);outline-offset:2px}.mo svg{width:100%;height:100%;display:block}
@@ -326,7 +328,7 @@ $('app').addEventListener('click',e=>{
   if(t.dataset.h&&delMode&&view==='today'){delSel=delSel===t.dataset.h?null:t.dataset.h;render();return}
   if(t.dataset.h&&view==='today'&&!editMode&&e.target.closest('.tt')){detId=t.dataset.h;detDate=kd(today);detTab='memo';page='det';render();return}
   if(t.dataset.h&&editMode&&view==='today'){if(Date.now()-sw<400)return;editId=t.dataset.h;page='edit';render();return}
-  if(t.hasAttribute('data-edtoggle')){editMode=!editMode;if(editMode){delMode=false;delSel=null}render();if(editMode){document.querySelectorAll('.tw.ed').forEach(x=>x.classList.remove('ed'));requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.tw').forEach(x=>x.classList.add('ed'))))}return}
+  if(t.hasAttribute('data-edtoggle')){editMode=!editMode;delMode=false;delSel=null;render();if(editMode){document.querySelectorAll('.tw.ed').forEach(x=>x.classList.remove('ed'));requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.tw').forEach(x=>x.classList.add('ed'))))}return}
   if(t.hasAttribute('data-deltoggle')){delMode=!delMode;delSel=null;if(delMode)editMode=false;render();return}
   if(t.dataset.xdel){askDel(t.dataset.xdel);return}
   if(t.hasAttribute('data-ed-back')){page='habits';editId=null;render();return}
@@ -826,7 +828,7 @@ function todayView(){
     const bar=multi(b)?`<i class="bar"><u style="width:${Math.min(100,(b.kind==='timer'?live(b):v)/b.goal*100)}%"></u></i>`:'';
     const mark=editMode?PENCIL:on?'✓':b.kind==='timer'?(TM[b.id]?'⏸':'▶'):(b.icon?icoSvg(b.icon):'');
     return `<div class="tw${delMode?' jig':''}${delSel===b.id?' sel':''}${editMode?' ed':''}" data-w="${b.id}"><button class="tile${on?' on':''}${editMode?' ed':''}" style="--c:${b.color}" data-h="${b.id}" data-k="${k}"><i class="fill"></i><span class="mk">${mark}</span><span class="tt"><b>${esc(b.name)}</b><small>${sub}</small>${bar}</span></button>${delMode?`<button class="xbtn" data-xdel="${b.id}" aria-label="${TD[lang()].del}">✕</button>`:''}${editMode?HND:''}</div>`}).join('');
-  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="row" style="justify-content:flex-end;margin:0 0 8px"><button class="chip" data-edtoggle>${editMode?E.done:E.edit}</button><button class="chip" data-deltoggle>${delMode?E.done:TD[lang()].del}</button></div><div class="tiles">${tiles}</div>`;
+  return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="row" style="justify-content:space-between;align-items:center;margin:0 0 8px"><h1 class="ttl">${TN[lang()].habits}</h1><div class="row" style="gap:8px"><button class="ib2${editMode?' on':''}" data-edtoggle aria-label="${E.edit}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>${editMode?`<button class="ib2${delMode?' on':''}" data-deltoggle aria-label="${TD[lang()].del}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>`:''}</div></div><div class="tiles">${tiles}</div>`;
 }
 let detId=null,detDate=kd(today),detTab='memo';
 const TM2={ru:{title:'Настроение',morn:'Утро',eve:'Вечер',legend:'Цвет дня (верх — утро, низ — вечер)',sum:'За месяц'},en:{title:'Mood',morn:'Morning',eve:'Evening',legend:'Day colour (top — morning, bottom — evening)',sum:'This month'}};
@@ -1152,7 +1154,7 @@ function applyLang(){
 }
 function chrome(){
   requestAnimationFrame(moveDock);
-  const h=page==='habits',L=lang();
+  const h=page==='habits',L=lang();document.querySelector('header .top').hidden=true;
   document.querySelector('.tabs').hidden=!h;$('addbox').hidden=!h;
   document.querySelectorAll('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.pg===page));
   if(!h){$('pv').hidden=$('nx').hidden=true;if(TN[L][page])$('lb').textContent=TN[L][page]}
