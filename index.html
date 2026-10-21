@@ -88,7 +88,7 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .dock button{position:relative;z-index:1;width:58px;height:50px;border:0;border-radius:24px;background:none;display:grid;place-items:center;color:var(--mute);transition:transform .25s cubic-bezier(.34,1.56,.64,1),color .3s}
 .dock button:active{transform:scale(.84)}.dock button svg{transition:transform .45s cubic-bezier(.34,1.56,.64,1)}.dock button.on{color:var(--bg)}.dock button.on svg{transform:scale(1.1)}
 .dock svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.tile{position:relative;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.tile>*{position:relative}.tile .fill{position:absolute;inset:0 auto 0 0;width:calc(var(--f,0)*100%);background:color-mix(in srgb,var(--c) 38%,transparent);opacity:0;pointer-events:none}.tile.drag .fill{opacity:1}.tile.drag{transform:scale(1.02)}.tile:not(.on) .mk{color:var(--c)}
+.tile{position:relative;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.tile>*{position:relative}.tile .fill{position:absolute;inset:0 auto 0 0;width:100%;transform-origin:left;transform:scaleX(var(--f,0));will-change:transform;background:color-mix(in srgb,var(--c) 38%,transparent);opacity:0;pointer-events:none}.tile.drag .fill{opacity:1}.tile.drag,.tile.drag:active{transform:none!important;transition:none;box-shadow:0 6px 18px rgba(0,0,0,.22)}.tile:not(.on) .mk{color:var(--c)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.cal i{font-style:normal;text-align:center;font-size:12px;color:var(--mute)}
 .cd{min-height:50px;border-radius:12px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;font-size:14px}.cd small{font-size:10px}.cd.f{opacity:.4}.cd.t{outline:2px solid var(--acc)}.cd.p{background:var(--acc);color:var(--bg);border-color:var(--acc)}
 .ringbox{display:grid;place-items:center;margin:18px 0 10px}.ringbox small{color:var(--mute)}
@@ -105,7 +105,7 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .cust{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;margin:6px 0}.cust input[type=color]{width:44px;height:32px;border:0;background:none;padding:0}
 .tg{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}.tg:first-child{border-top:0}.tg input{width:22px;height:22px;accent-color:var(--acc);flex:none}
 .isw{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0;font-size:20px;flex:none}.isw svg{width:22px;height:22px}
-.ig{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;max-height:60vh;overflow-y:auto}.ig button{aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:7px}.ig button.on{outline:2px solid var(--acc);outline-offset:1px}.ig svg{width:100%;height:100%}.mk svg{width:20px;height:20px}
+.ig{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;max-height:55vh;overflow-y:auto;padding:4px;box-sizing:border-box}.ig button{aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:8px;min-width:0}.ig button.on{outline:2px solid var(--acc);outline-offset:-2px}.ig svg{width:100%;height:100%}.mk svg{width:20px;height:20px}
 .isw{width:auto;min-width:40px;padding:0 8px}.trio{display:flex;gap:4px}.isw .trio svg{width:13px;height:13px}
 .tile.ed{outline:2px dashed var(--acc);outline-offset:-2px}
 .cd{position:relative}.dm{width:6px;height:6px;border-radius:50%;position:absolute;bottom:4px;left:50%;transform:translateX(-50%)}
@@ -119,6 +119,11 @@ select{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--l
 .ava{width:96px;height:96px;border-radius:50%;overflow:hidden;background:var(--off);display:grid;place-items:center;margin:0 auto 12px;font-size:40px}.ava img{width:100%;height:100%;object-fit:cover}
 .leg{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px;color:var(--mute)}.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
 .dock .pill.drag{transition:none}
+.mcard{border-radius:28px;padding:20px 12px 10px;margin-bottom:12px;overflow:hidden;background:#f4b862}.mface{width:min(74%,280px);display:block;margin:0 auto}
+.mlab{text-align:center;font-weight:900;font-size:42px;letter-spacing:.02em;text-transform:uppercase;line-height:1.1;margin:0 0 16px}.mlab.pop{animation:mpop .32s cubic-bezier(.34,1.56,.64,1)}@keyframes mpop{from{transform:scale(.86);opacity:.35}to{transform:none;opacity:1}}
+.mtr{position:relative;height:56px;margin:0 22px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}.mtr .line{position:absolute;left:0;right:0;top:26px;height:4px;border-radius:2px;background:rgba(0,0,0,.2)}.mtr .st{position:absolute;top:24px;width:8px;height:8px;border-radius:50%;background:rgba(0,0,0,.3);transform:translateX(-50%)}
+.mth{position:absolute;left:0;top:6px;width:46px;height:46px;margin-left:-23px;border-radius:50%;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.28);display:grid;place-items:center;will-change:transform}.mth svg{width:36px;height:27px}
+.mnames{display:flex;justify-content:space-between;margin:0 14px 6px;font-size:12px;color:rgba(0,0,0,.55)}
 .fld{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;font-size:12px;color:var(--mute)}.fld input{width:100%;flex:none;min-width:0}
 </style>
 </head>
@@ -238,7 +243,7 @@ function yearView(){
 }
 function render(){
   chrome();
-  if(page!=='habits'){$('app').innerHTML=pageView();return}
+  if(page!=='habits'){$('app').innerHTML=pageView();if(page==='mood')initMood();return}
   $('lb').textContent=view==='today'?WD[wdi(today)]+', '+today.getDate()+' '+GEN[today.getMonth()]:view==='month'?MONTHS[cur.getMonth()]+' '+cur.getFullYear():String(cur.getFullYear());
   $('pv').hidden=$('nx').hidden=view==='today';
   $('tt').classList.toggle('on',view==='today');$('tm').classList.toggle('on',view==='month');$('ty').classList.toggle('on',view==='year');
@@ -276,7 +281,7 @@ function drawDots(){
 }
 $('app').addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
-  if(t.dataset.mo){S.mood=S.mood||{};const dk=kd(today);S.mood[dk]=S.mood[dk]||{};S.mood[dk][t.dataset.mo]=+t.dataset.i;save();render();return}
+  if(t.dataset.mslot){mSlot=t.dataset.mslot;document.querySelectorAll('[data-mslot]').forEach(b=>b.classList.toggle('on',b===t));const em=(S.mood||{})[kd(today)]||{};mTar=em[mSlot]!=null?em[mSlot]:3;loop();return}
   if(t.hasAttribute('data-export')){exportX();return}
   if(t.dataset.dd){const dt=new Date(detDate+'T00:00:00');dt.setDate(dt.getDate()+(+t.dataset.dd));if(dt<=today){detDate=kd(dt);render()}return}
   if(t.dataset.dtab){detTab=t.dataset.dtab;render();return}
@@ -428,10 +433,10 @@ $('app').addEventListener('pointerdown',e=>{const t=e.target.closest('.tile');if
   dg={t,b,x:e.clientX,y:e.clientY,on:false,f:0,tm:setTimeout(()=>{if(dg){dg.on=true;t.classList.add('drag');navigator.vibrate&&navigator.vibrate(12)}},260)}});
 addEventListener('pointermove',e=>{if(!dg)return;
   if(!dg.on){const dx=e.clientX-dg.x,dy=e.clientY-dg.y;if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)){clearTimeout(dg.tm);dg.on=true;dg.t.classList.add('drag')}else if(Math.abs(dy)>10){clearTimeout(dg.tm);dg=null}return}
-  const r=dg.t.getBoundingClientRect();dg.f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));dg.t.style.setProperty('--f',dg.f);const lv=Math.round(dg.f*10);if(lv!==dg.lv){dg.lv=lv;buzz('prog')}});
+  const d=dg,r=d.r||(d.r=d.t.getBoundingClientRect());d.f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(!d.q)d.q=requestAnimationFrame(()=>{d.q=0;d.t.style.setProperty('--f',d.f);liveTxt(d)});const lv=Math.round(dg.f*10);if(lv!==dg.lv){dg.lv=lv;buzz('prog')}});
 addEventListener('pointerup',()=>{if(!dg)return;clearTimeout(dg.tm);const d=dg;dg=null;if(!d.on)return;sw=Date.now();d.t.classList.remove('drag');
-  const b=d.b,k=kd(today),f=d.f,cnt=b.kind==='count'||b.kind==='timer',st=b.kind==='timer'?1:(b.step||1);
-  change(b,today,()=>{if(f>=.85)b.days[k]=cnt?Math.max(b.goal,b.days[k]||0):1;else if(cnt&&f>.05)b.days[k]=Math.min(b.goal,Math.round(f*b.goal/st)*st)})});
+  const b=d.b,k=kd(today),f=d.f,cnt=b.kind==='count'||b.kind==='timer',st=b.kind==='timer'?(b.tunit==='sec'?1/60:1):(b.step||1);
+  change(b,today,()=>{if(cnt){if(f>=.97)b.days[k]=Math.max(b.goal,b.days[k]||0);else if(f>.03)b.days[k]=Math.min(b.goal,Math.round(f*b.goal/st)*st)}else if(f>=.85)b.days[k]=1})});
 addEventListener('pointercancel',()=>{if(dg){clearTimeout(dg.tm);dg.t.classList.remove('drag');dg=null}});
 $('dock').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.pg;sub=null;subS=null;scrollTo(0,0);render()}};
 $('app').addEventListener('input',e=>{const d=e.target.dataset;if(d.p){S.prof=S.prof||{};S.prof[d.p]=e.target.value;save();if(d.p==='lang'){applyLang();render()}}if(d.dock!==undefined){S.look=S.look||{};S.look.t=+e.target.value;$('dv').textContent=e.target.value;applyLook();save()}if(d.cbg){S.look=S.look||{};S.look.bg=e.target.value;applyLook();save()}});
@@ -786,8 +791,8 @@ function todayView(){
   return `<div class="hero"><svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--off)" stroke-width="9"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${dn}/${tot}</text></svg><div><b>${T.tToday}</b><p>${esc(msg)}</p></div></div><div class="row" style="justify-content:flex-end;margin:0 0 8px"><button class="chip" data-edtoggle>${editMode?E.done:E.edit}</button></div><div class="tiles">${tiles}</div>`;
 }
 let detId=null,detDate=kd(today),detTab='memo';
-const TM2={ru:{title:'Настроение',morn:'Утро',eve:'Вечер',legend:'Цвет дня',sum:'За месяц'},en:{title:'Mood',morn:'Morning',eve:'Evening',legend:'Day colour',sum:'This month'}};
-const MOODS=[{c:'#c97b7b',n:'Ужасно',e:'Terrible'},{c:'#a878c8',n:'Плохо',e:'Bad'},{c:'#6f7fe8',n:'Бедный',e:'Poor'},{c:'#8fbfe8',n:'Нейтральный',e:'Neutral'},{c:'#86c98a',n:'Хорошо',e:'Good'},{c:'#f4b862',n:'Отлично',e:'Great'}];
+const TM2={ru:{title:'Настроение',morn:'Утро',eve:'Вечер',legend:'Цвет дня (верх — утро, низ — вечер)',sum:'За месяц'},en:{title:'Mood',morn:'Morning',eve:'Evening',legend:'Day colour (top — morning, bottom — evening)',sum:'This month'}};
+const MOODS=[{c:'#c97b7b',n:'Ужасно',e:'Terrible'},{c:'#a878c8',n:'Плохо',e:'Bad'},{c:'#6f7fe8',n:'Грустный',e:'Sad'},{c:'#8fbfe8',n:'Нейтральный',e:'Neutral'},{c:'#86c98a',n:'Хорошо',e:'Good'},{c:'#f4b862',n:'Отлично',e:'Great'}];
 const MFACE=['<path d="M15 19l6 6M21 19l-6 6M27 19l6 6M33 19l-6 6" stroke="#222" stroke-width="2.4" stroke-linecap="round"/><path d="M16 35q8-6 16 0" stroke="#222" stroke-width="2.6" fill="none" stroke-linecap="round"/>','<path d="M14 21q3 3 6 0M28 21q3 3 6 0" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M16 35q8-6 16 0" stroke="#222" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="34" cy="26" r="1.6" fill="#b4e0ff"/>','<path d="M14 21h8M26 21h8" stroke="#222" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="24" r="1.4" fill="#222"/><circle cx="32" cy="24" r="1.4" fill="#222"/><path d="M19 35h10" stroke="#222" stroke-width="2.6" stroke-linecap="round"/>','<circle cx="18" cy="22" r="2.4" fill="#222"/><circle cx="30" cy="22" r="2.4" fill="#222"/><path d="M19 34h10" stroke="#222" stroke-width="2.6" stroke-linecap="round"/>','<circle cx="18" cy="22" r="2.4" fill="#222"/><circle cx="30" cy="22" r="2.4" fill="#222"/><path d="M18 31q6 5 12 0" stroke="#222" stroke-width="2.6" fill="none" stroke-linecap="round"/>','<path d="M14 22q3-4 6 0M28 22q3-4 6 0" stroke="#222" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M16 29q8 10 16 0z" fill="#222"/>'];
 const moodName=i=>lang()==='en'?MOODS[i].e:MOODS[i].n;
 const moodSvg=i=>`<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="${MOODS[i].c}"/>${MFACE[i]}</svg>`;
@@ -846,17 +851,17 @@ function detView(){
   else{const s=streaks(b);body=`<div class="card"><div class="kv"><div><b>${s.c}</b><span>${T.streak}</span></div><div><b>${s.best}</b><span>${T.record}</span></div><div><b>${pct(b)}%</b><span>${T.monthPct}</span></div><div><b>${bestWd(b)}</b><span>${T.bestDay}</span></div></div></div>`}
   return `<div class="dtop"><button class="back" data-dback>‹ ${T.tToday}</button><button class="chip" data-dedit="${b.id}">⋯</button></div><div class="dnav"><button data-dd="-1">‹</button><span>${label}</span><button data-dd="1"${isT?' disabled':''}>›</button></div>${ring}${ctl}${seg}${body}`;
 }
-function moodView(){
+function moodCal(){
   const L=TM2[lang()],dk=kd(today),c0=(S.mood||{})[dk]||{},md=S.mood||{};
   const row=kk=>MOODS.map((m,i)=>`<button class="mo${c0[kk]===i?' on':''}" data-mo="${kk}" data-i="${i}" aria-label="${moodName(i)}">${moodSvg(i)}</button>`).join('');
   const y=cur.getFullYear(),mo=cur.getMonth(),dim=new Date(y,mo+1,0).getDate(),off=wdi(new Date(y,mo,1));
   let cells=WD.map(w=>`<i>${w}</i>`).join('')+'<span></span>'.repeat(off);
   const cnt=MOODS.map(()=>0);
-  for(let d=1;d<=dim;d++){const x=new Date(y,mo,d),e=md[key(y,mo,d)]||{},col=e.e!=null?e.e:e.m,past=x<=today;if(col!=null&&past)cnt[col]++;
-    cells+=`<div class="cd${x>today?' f':''}${+x===+today?' t':''}"${col!=null&&past?` style="background:${MOODS[col].c};color:#222;border-color:transparent"`:''}>${d}${e.m!=null&&past?`<small class="dm" style="background:${MOODS[e.m].c}"></small>`:''}</div>`}
+  for(let d=1;d<=dim;d++){const x=new Date(y,mo,d),e=md[key(y,mo,d)]||{},col=e.e!=null?e.e:e.m,past=x<=today;if(past){if(e.m!=null)cnt[e.m]++;if(e.e!=null)cnt[e.e]++}
+    cells+=`<div class="cd${x>today?' f':''}${+x===+today?' t':''}"${col!=null&&past?` style="background:linear-gradient(to bottom,${e.m!=null?MOODS[e.m].c:'transparent'} 50%,${e.e!=null?MOODS[e.e].c:'transparent'} 50%);color:#222;border-color:transparent"`:''}>${d}</div>`}
   const legend=MOODS.map((m,i)=>`<span><i style="background:${m.c}"></i>${moodName(i)}</span>`).join('');
   const sum=MOODS.map((m,i)=>`<span><i style="background:${m.c}"></i>${cnt[i]}</span>`).join('');
-  return `<div class="card"><h2>${L.morn}</h2><div class="mrow">${row('m')}</div><h2>${L.eve}</h2><div class="mrow">${row('e')}</div></div><div class="cal" style="margin-top:12px">${cells}</div><div class="card" style="margin-top:12px"><h2>${L.legend}</h2><div class="leg">${legend}</div></div><div class="card" style="margin-top:12px"><h2>${L.sum}</h2><div class="leg">${sum}</div></div>`;
+  return `<div class="cal" style="margin-top:12px">${cells}</div><div class="card" style="margin-top:12px"><h2>${L.legend}</h2><div class="leg">${legend}</div></div><div class="card" style="margin-top:12px"><h2>${L.sum}</h2><div class="leg">${sum}</div></div>`;
 }
 function exportX(){
   if(typeof XLSX==='undefined'){toast(lang()==='en'?'Excel library did not load, check internet':'Библиотека Excel не загрузилась, проверьте интернет');return}
@@ -947,6 +952,59 @@ addEventListener('pointerup',()=>{
   suppress=true;page=best.dataset.pg;sub=null;subS=null;detId=null;render();
 });
 dockEl.addEventListener('click',e=>{if(suppress){suppress=false;e.stopPropagation();e.preventDefault()}},true);
+let mSlot='m',mCur=3,mTar=3,mRaf=0,mDrag=false,mLast=-1;
+const mRM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const MK=[{ex:42,ey:56,rx:11,ry:11,rot:0,mw:24,mh:-14,my:112,fill:0,xx:1,tear:0,bl:0},{ex:42,ey:58,rx:13,ry:6,rot:8,mw:22,mh:-12,my:110,fill:0,xx:0,tear:1,bl:0},{ex:44,ey:58,rx:15,ry:3.5,rot:0,mw:14,mh:-5,my:110,fill:0,xx:0,tear:0,bl:0},{ex:42,ey:56,rx:10,ry:10,rot:0,mw:14,mh:0,my:108,fill:0,xx:0,tear:0,bl:0},{ex:42,ey:56,rx:11,ry:11,rot:0,mw:20,mh:8,my:104,fill:0,xx:0,tear:0,bl:.4},{ex:40,ey:52,rx:12,ry:12,rot:0,mw:30,mh:22,my:96,fill:1,xx:0,tear:0,bl:1}];
+function mp(t){const i=Math.min(4,Math.floor(t)),f=t-i,A=MK[i],B=MK[i+1],o={};for(const k in A)o[k]=A[k]+(B[k]-A[k])*f;return o}
+function mcol(t){const i=Math.min(4,Math.floor(t));return mix(MOODS[i].c,MOODS[i+1].c,t-i)}
+const faceSvg=cls=>`<svg class="${cls}" viewBox="0 0 200 150" aria-hidden="true"><ellipse data-r="el" fill="#222"/><ellipse data-r="er" fill="#222"/><g data-r="xx" stroke="#222" stroke-width="5" stroke-linecap="round"><path data-r="xl"/><path data-r="xr"/></g><path data-r="tear" d="M58 74q-7 11 0 15q7-4 0-15z" fill="#5aa0ff"/><ellipse data-r="bl1" rx="12" ry="7" fill="#ff7f7f"/><ellipse data-r="bl2" rx="12" ry="7" fill="#ff7f7f"/><path data-r="mf" fill="#222"/><path data-r="mo" fill="none" stroke="#222" stroke-width="6" stroke-linecap="round"/></svg>`;
+function paintFace(root,p){
+  const q=r=>root.querySelector('[data-r="'+r+'"]'),set=(el,o)=>{for(const k in o)el.setAttribute(k,o[k])},ex=p.ex,ey=p.ey;
+  set(q('el'),{cx:100-ex,cy:ey,rx:p.rx,ry:p.ry,transform:`rotate(${p.rot} ${100-ex} ${ey})`,opacity:1-p.xx});
+  set(q('er'),{cx:100+ex,cy:ey,rx:p.rx,ry:p.ry,transform:`rotate(${-p.rot} ${100+ex} ${ey})`,opacity:1-p.xx});
+  set(q('xx'),{opacity:p.xx});
+  set(q('xl'),{d:`M${100-ex-9} ${ey-9}l18 18M${100-ex+9} ${ey-9}l-18 18`});
+  set(q('xr'),{d:`M${100+ex-9} ${ey-9}l18 18M${100+ex+9} ${ey-9}l-18 18`});
+  set(q('tear'),{opacity:p.tear,transform:`translate(${42-ex} ${ey-56})`});
+  set(q('bl1'),{cx:100-ex-24,cy:ey+22,opacity:p.bl*.55});set(q('bl2'),{cx:100+ex+24,cy:ey+22,opacity:p.bl*.55});
+  const d=`M${100-p.mw} ${p.my}Q100 ${p.my+p.mh*2} ${100+p.mw} ${p.my}`;
+  set(q('mo'),{d});set(q('mf'),{d:d+'Z',opacity:p.fill});
+}
+function drawMood(){
+  const c=$('mcard'),tr=$('mtr');if(!c||!tr)return;
+  const p=mp(mCur),col=mcol(mCur),i=Math.round(mCur),lb=$('mlab');
+  c.style.background=col;lb.style.color=mix(col,'#000000',.3);
+  paintFace(c.querySelector('.mface'),p);paintFace($('mth'),p);
+  $('mth').style.transform=`translateX(${mCur/5*tr.offsetWidth}px)`;
+  if(i!==mLast){mLast=i;lb.textContent=moodName(i);lb.classList.remove('pop');void lb.offsetWidth;lb.classList.add('pop');if(mDrag)buzz('prog')}
+}
+function loop(){if(!mRaf)mRaf=requestAnimationFrame(mStep)}
+function mStep(){mRaf=0;const d=mTar-mCur;mCur=mRM||Math.abs(d)<.002?mTar:mCur+d*(mDrag?.4:.16);drawMood();if(mCur!==mTar)loop()}
+function mSet(x){const tr=$('mtr');if(!tr)return;const r=tr.getBoundingClientRect();mTar=Math.max(0,Math.min(5,(x-r.left)/r.width*5));loop()}
+function saveMood(){const k=kd(today);S.mood=S.mood||{};(S.mood[k]=S.mood[k]||{})[mSlot]=mTar;save();$('mcal').innerHTML=moodCal()}
+function initMood(){
+  mSlot=new Date().getHours()>=16?'e':'m';
+  document.querySelectorAll('[data-mslot]').forEach(b=>b.classList.toggle('on',b.dataset.mslot===mSlot));
+  const em=(S.mood||{})[kd(today)]||{};mCur=mTar=em[mSlot]!=null?em[mSlot]:3;mLast=-1;mDrag=false;drawMood();
+  const tr=$('mtr');
+  tr.addEventListener('pointerdown',ev=>{mDrag=true;tr.setPointerCapture(ev.pointerId);mSet(ev.clientX)});
+  tr.addEventListener('pointermove',ev=>{if(mDrag)mSet(ev.clientX)});
+  const end=()=>{if(!mDrag)return;mDrag=false;mTar=Math.round(mTar);saveMood();loop()};
+  tr.addEventListener('pointerup',end);tr.addEventListener('pointercancel',end);
+}
+function moodView(){
+  const L=TM2[lang()];
+  return `<div class="seg"><button data-mslot="m" class="${mSlot==='m'?'on':''}">${L.morn}</button><button data-mslot="e" class="${mSlot==='e'?'on':''}">${L.eve}</button></div><div class="mcard" id="mcard">${faceSvg('mface')}<div class="mlab" id="mlab"></div><div class="mtr" id="mtr"><div class="line"></div>${[0,1,2,3,4,5].map(i=>`<i class="st" style="left:${i*20}%"></i>`).join('')}<div class="mth" id="mth">${faceSvg('')}</div></div><div class="mnames"><span>${moodName(0)}</span><span>${moodName(5)}</span></div></div><div id="mcal">${moodCal()}</div>`;
+}
+function liveTxt(d){
+  const b=d.b,t=d.t,T=TX[lang()],en=lang()==='en';
+  if(b.kind!=='count'&&b.kind!=='timer'){t.classList.toggle('on',d.f>=.85);return}
+  const st=b.kind==='timer'?(b.tunit==='sec'?1/60:1):(b.step||1),v=d.f>=.97?b.goal:Math.round(d.f*b.goal/st)*st,sm=t.querySelector('small'),u=t.querySelector('.bar u');
+  if(b.kind==='timer')sm.textContent=b.tunit==='sec'?Math.round(v*60)+' '+T.of+' '+Math.round(b.goal*60)+(en?' sec':' сек'):Math.floor(v)+' '+T.of+' '+b.goal+(en?' min':' мин');
+  else sm.textContent=v+' '+T.of+' '+b.goal+' '+(b.unit||'');
+  if(u)u.style.width=Math.min(100,v/b.goal*100)+'%';
+}
+$('app').addEventListener('touchmove',e=>{if(dg&&dg.on)e.preventDefault()},{passive:false});
 applyLang();applyLook();formUI();drawDots();render();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
